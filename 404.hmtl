@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!-- v1.0 - initial build: friendly 404 page, yellow + bright blue, canvas confetti, single file, vanilla JS -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found</title>
+<meta name="description" content="This page isn't here, but the rest of the site is.">
+<style>
+  /* v1.0 - colour tokens: yellow background, bright blue as the main accent, deep blue for text */
+  :root {
+    --yellow: #FFD60A;
+    --blue: #0047FF;
+    --navy: #0A1F6B;
+    --white: #FFFFFF;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--yellow);
+    color: var(--navy);
+    font-family: "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  /* The confetti canvas covers the whole screen, sits behind the text and ignores clicks */
+  #confetti {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 640px;
+  }
+
+  /* The big "404" is the one loud thing on the page */
+  .code {
+    margin: 0;
+    font-size: clamp(6rem, 30vw, 14rem);
+    font-weight: 900;
+    line-height: .9;
+    letter-spacing: -.04em;
+    color: var(--blue);
+    text-shadow: 6px 6px 0 var(--navy);
+  }
+  h1 {
+    margin: 24px 0 8px;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    line-height: 1.15;
+  }
+  p { margin: 0 0 28px; font-size: 1.15rem; max-width: 34em; }
+
+  /* The big home link: large, bright blue, easy to hit with a thumb */
+  .home {
+    display: block;
+    width: 100%;
+    padding: 22px 28px;
+    background: var(--blue);
+    color: var(--white);
+    font-size: clamp(1.3rem, 4.5vw, 1.8rem);
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 18px;
+    box-shadow: 0 6px 0 var(--navy);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .home:hover { transform: translateY(2px); box-shadow: 0 4px 0 var(--navy); }
+  .home:active { transform: translateY(6px); box-shadow: 0 0 0 var(--navy); }
+
+  /* Small secondary button for more confetti */
+  .more {
+    margin-top: 20px;
+    padding: 10px 16px;
+    background: transparent;
+    color: var(--navy);
+    font: inherit;
+    font-weight: 700;
+    border: 3px solid var(--navy);
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .more:hover { background: var(--navy); color: var(--yellow); }
+
+  /* Clear keyboard focus ring that works on both yellow and blue */
+  a:focus-visible, button:focus-visible {
+    outline: 4px solid var(--navy);
+    outline-offset: 4px;
+  }
+  .home:focus-visible { outline-color: var(--white); box-shadow: 0 0 0 4px var(--navy); }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+
+  /* People who prefer less motion get no button animation (and no confetti, see script) */
+  @media (prefers-reduced-motion: reduce) {
+    .home { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Decorative confetti layer: hidden from screen readers -->
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main>
+  <p class="code" aria-hidden="true">404</p>
+  <h1>Oops, we can't find that page.</h1>
+  <p>The link may be old, or the address may have a typo. The rest of the site is still here.</p>
+
+  <!-- Full site address as requested -->
+  <a class="home" href="https://Rdestino.github.io/vibe-coding/">Take me home</a>
+
+  <button class="more" id="more" type="button">Throw more confetti</button>
+  <span class="sr-only" id="status" role="status" aria-live="polite"></span>
+</main>
+
+<script>
+// v1.0 - initial build
+(function () {
+  'use strict';
+
+  // ---- Setup: find the canvas and check whether the visitor wants reduced motion ----
+  var canvas = document.getElementById('confetti');
+  var ctx = canvas.getContext('2d');
+  var moreBtn = document.getElementById('more');
+  var status = document.getElementById('status');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // If motion is unwanted, the confetti button has no job, so hide it and stop here.
+  if (reduceMotion) { moreBtn.hidden = true; return; }
+
+  // Colours for the paper pieces: bright blue family plus white and a pale yellow
+  var COLORS = ['#0047FF', '#0A1F6B', '#FFFFFF', '#5AA2FF', '#FFF3A3'];
+
+  var pieces = [];       // every confetti piece currently on screen
+  var running = false;   // true while the animation loop is active
+  var w = 0, h = 0;      // canvas size in CSS pixels
+
+  // ---- Keep the canvas sharp on high-density screens and sized to the window ----
+  function resize() {
+    var dpr = window.devicePixelRatio || 1;
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---- Make one piece of confetti shooting up and out from a point ----
+  function makePiece(x, y) {
+    var angle = (-90 + (Math.random() * 100 - 50)) * Math.PI / 180; // mostly upward fan
+    var speed = 8 + Math.random() * 12;
+    return {
+      x: x, y: y,
+      vx: Math.abs(Math.cos(angle)) * speed * (x > 0 ? -1 : 1), // right corner flies left, left corner flies right
+      vy: Math.sin(angle) * speed,
+      size: 7 + Math.random() * 8,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rot: Math.random() * Math.PI * 2,
+      spin: (Math.random() - .5) * .3
+    };
+  }
+
+  // ---- Fire a burst from the bottom-left and bottom-right corners ----
+  function burst() {
+    for (var i = 0; i < 70; i++) {
+      pieces.push(makePiece(0, h));
+      pieces.push(makePiece(w, h));
+    }
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+
+  // ---- Animation loop: move each piece, apply gravity and drag, draw it, drop it when it leaves ----
+  function tick() {
+    ctx.clearRect(0, 0, w, h);
+    for (var i = pieces.length - 1; i >= 0; i--) {
+      var p = pieces[i];
+      p.vy += .35;          // gravity pulls pieces down
+      p.vx *= .985;         // air drag slows sideways drift
+      p.vy *= .985;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.spin;
+
+      // Draw the piece as a small rotated rectangle
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      ctx.restore();
+
+      // Remove pieces once they fall below the screen
+      if (p.y > h + 40) pieces.splice(i, 1);
+    }
+    if (pieces.length) { requestAnimationFrame(tick); }
+    else { running = false; ctx.clearRect(0, 0, w, h); }
+  }
+
+  // ---- Button: more confetti on demand, with a quiet note for screen reader users ----
+  moreBtn.addEventListener('click', function () {
+    burst();
+    status.textContent = 'Confetti thrown.';
+  });
+
+  // ---- One automatic burst when the page loads ----
+  burst();
+})();
+</script>
+</body>
+</html>
