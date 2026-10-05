@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- v1.1 - Added serving information, cooking time, and second finished-dish photo -->
+
+    <!-- Makes the page responsive on phones, tablets, and computers -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bills Barn Buffalo Wings</title>
+
+    <style>
+        /* Sets up the overall page and centers the recipe card */
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            background: #f2f2f2;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* Creates the main recipe card */
+        .recipe-card {
+            width: 100%;
+            max-width: 760px;
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+        }
+
+        /* Styles the main recipe title */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: clamp(30px, 5vw, 46px);
+            color: #b31b24;
+        }
+
+        /* Styles the serving size and cooking time underneath the title */
+        .recipe-info {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* Keeps the food image centered and prevents it from becoming too large */
+        .recipe-image {
+            display: block;
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            margin: 0 auto 24px auto;
+            border-radius: 14px;
+        }
+
+        /* Styles the short recipe description */
+        .description {
+            text-align: center;
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        /* Adds spacing above each section */
+        section {
+            margin-top: 26px;
+        }
+
+        /* Styles the Ingredients and Directions headings */
+        h2 {
+            color: #1d4f91;
+            font-size: 25px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 7px;
+        }
+
+        /* Gives ingredient and direction lists comfortable spacing */
+        ul,
+        ol {
+            padding-left: 26px;
+            line-height: 1.7;
+            font-size: 17px;
+        }
+
+        /* Adds extra space between each recipe step */
+        li {
+            margin-bottom: 9px;
+        }
+
+        /* Creates a small highlighted tip box */
+        .tip {
+            margin-top: 26px;
+            padding: 16px;
+            background: #fff4d6;
+            border-left: 5px solid #f2b705;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        /* Adds spacing above the second finished-dish photo */
+        .finished-image {
+            margin-top: 28px;
+            margin-bottom: 0;
+        }
+
+        /* Makes the recipe card more compact on smaller screens */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .recipe-card {
+                padding: 20px;
+            }
+
+            ul,
+            ol {
+                padding-left: 22px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Main recipe content is placed inside one centered card -->
+    <main class="recipe-card" aria-labelledby="recipe-title">
+
+        <!-- Main recipe title -->
+        <h1 id="recipe-title">Bills Barn Buffalo Wings</h1>
+
+        <!-- Displays the serving size and approximate preparation and cooking times -->
+        <p class="recipe-info">
+            Serves 6–8 &bull; Prep: 15 minutes &bull; Cook: 50 minutes &bull; Total: 1 hour 5 minutes
+        </p>
+
+        <!--
+            Keep "photo.jpg" in the same folder as this HTML file.
+        -->
+        <img
+            src="photo.jpg"
+            alt="Extra crispy mild buffalo chicken wings served with celery and dipping sauce"
+            class="recipe-image"
+        >
+
+        <!-- Short description of the finished wings -->
+        <p class="description">
+            Extra crispy wings with smoky seasoning and a buttery mild Buffalo sauce.
+            Perfect for game day at the Bills Barn.
+        </p>
+
+        <!-- Ingredients section uses a bulleted list -->
+        <section aria-labelledby="ingredients-heading">
+            <h2 id="ingredients-heading">Ingredients</h2>
+
+            <ul>
+                <li>4 pounds chicken wings, split into flats and drumettes</li>
+                <li>1 tablespoon baking powder</li>
+                <li>2 teaspoons kosher salt</li>
+                <li>1 teaspoon garlic powder</li>
+                <li>1 teaspoon onion powder</li>
+                <li>1 teaspoon smoked paprika</li>
+                <li>1/2 teaspoon black pepper</li>
+                <li>1/2 teaspoon chili powder</li>
+                <li>1 cup mild Buffalo hot sauce</li>
+                <li>6 tablespoons unsalted butter, melted</li>
+                <li>1 tablespoon honey</li>
+                <li>1 teaspoon Worcestershire sauce</li>
+                <li>1/2 teaspoon garlic powder for the sauce</li>
+                <li>Celery sticks, for serving</li>
+                <li>Blue cheese or ranch dressing, for serving</li>
+            </ul>
+        </section>
+
+        <!-- Directions section uses a numbered list -->
+        <section aria-labelledby="directions-heading">
+            <h2 id="directions-heading">Directions</h2>
+
+            <ol>
+                <li>
+                    Pat the chicken wings extremely dry with paper towels.
+                    Removing moisture is one of the most important steps for crispy skin.
+                </li>
+
+                <li>
+                    Place the wings in a large bowl. Add the baking powder, salt,
+                    garlic powder, onion powder, smoked paprika, black pepper,
+                    and chili powder.
+                </li>
+
+                <li>
+                    Toss until every wing is evenly coated with the seasoning mixture.
+                </li>
+
+                <li>
+                    For the crispiest results, place the seasoned wings uncovered
+                    on a wire rack in the refrigerator for at least 2 hours,
+                    or overnight if possible.
+                </li>
+
+                <li>
+                    Preheat the oven to 425°F. Place a wire rack over a large
+                    foil-lined baking sheet and lightly grease the rack.
+                </li>
+
+                <li>
+                    Arrange the wings in a single layer with space between them.
+                    Do not overcrowd the pan.
+                </li>
+
+                <li>
+                    Bake for about 25 minutes, then flip each wing.
+                </li>
+
+                <li>
+                    Continue baking for another 20 to 25 minutes, or until the
+                    wings are deeply browned, crisp, and cooked through.
+                </li>
+
+                <li>
+                    While the wings cook, make the mild Buffalo sauce.
+                    Combine the Buffalo sauce, melted butter, honey,
+                    Worcestershire sauce, and garlic powder in a small bowl.
+                </li>
+
+                <li>
+                    Whisk the sauce until completely combined and smooth.
+                </li>
+
+                <li>
+                    Transfer the hot crispy wings to a large bowl.
+                    Pour the Buffalo sauce over the wings.
+                </li>
+
+                <li>
+                    Toss gently until the wings are coated.
+                    Use only enough sauce to coat them so they stay crispy.
+                </li>
+
+                <li>
+                    Serve immediately with celery sticks and blue cheese
+                    or ranch dressing.
+                </li>
+            </ol>
+        </section>
+
+        <!-- Highlighted cooking tip -->
+        <aside class="tip" aria-label="Extra crispy wing tip">
+            <strong>Extra Crispy Tip:</strong>
+            The baking powder and refrigerator-drying step help pull moisture
+            from the skin. For maximum crunch, sauce the wings immediately
+            before serving instead of letting them sit in the sauce.
+        </aside>
+
+      <!--
+            Keep "photo1.jpg" in the same folder as this HTML file.
+        -->
+        <img
+            src="photo1.jpg"
+            alt="Finished Bills Barn mild Buffalo wings ready to serve"
+            class="recipe-image finished-image"
+        >
+
+    </main>
+
+    <script>
+        // v1.1 - Added recipe serving information, cooking time, and a second finished-dish photo.
+
+        // This recipe card does not require interactive controls,
+        // so no JavaScript is currently necessary.
+        // This script area is included so the page follows the requested
+        // single-file HTML, CSS, and JavaScript structure.
+
+        // This message confirms in the browser's developer console
+        // that the recipe card loaded successfully.
+        console.log("Bills Barn Buffalo Wings recipe card loaded successfully.");
+    </script>
+
+</body>
+</html>

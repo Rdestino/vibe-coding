@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!--
+        QR Code Generator
+        v1.0 - Initial build
+
+        Single-file HTML application.
+        QR codes are generated locally in the user's browser.
+        User-entered data is never submitted to a server.
+    -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QR Code Generator</title>
+
+    <style>
+        /* =========================================================
+           v1.0 - PAGE RESET
+           Removes inconsistent default browser spacing and ensures
+           padding and borders are included in element dimensions.
+        ========================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f6f8;
+            color: #1f2937;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+        }
+
+
+        /* =========================================================
+           v1.0 - MAIN APPLICATION CARD
+        ========================================================== */
+
+        .app {
+            width: 100%;
+            max-width: 650px;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 32px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.10);
+        }
+
+
+        /* =========================================================
+           v1.0 - HEADINGS AND INTRODUCTION
+        ========================================================== */
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+
+            text-align: center;
+
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+
+            color: #111827;
+        }
+
+        .intro {
+            text-align: center;
+
+            margin-top: 0;
+            margin-bottom: 30px;
+
+            color: #4b5563;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           v1.0 - FORM ELEMENTS
+        ========================================================== */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: 700;
+
+            color: #111827;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 130px;
+
+            padding: 14px;
+
+            font-family: inherit;
+            font-size: 1rem;
+
+            line-height: 1.5;
+
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+
+            resize: vertical;
+
+            background: #ffffff;
+            color: #111827;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.20);
+        }
+
+
+        /* =========================================================
+           v1.0 - BUTTONS
+        ========================================================== */
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 12px;
+
+            margin-top: 16px;
+        }
+
+        button {
+            flex: 1;
+
+            min-width: 150px;
+
+            border: none;
+            border-radius: 10px;
+
+            padding: 14px 20px;
+
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                background-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 3px;
+        }
+
+        .generate-button {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .generate-button:hover {
+            background: #1d4ed8;
+        }
+
+        .save-button {
+            background: #047857;
+            color: #ffffff;
+        }
+
+        .save-button:hover {
+            background: #065f46;
+        }
+
+        .clear-button {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .clear-button:hover {
+            background: #d1d5db;
+        }
+
+
+        /* =========================================================
+           v1.0 - QR CODE RESULT AREA
+        ========================================================== */
+
+        .result-section {
+            margin-top: 30px;
+
+            padding-top: 25px;
+
+            border-top: 1px solid #e5e7eb;
+
+            text-align: center;
+        }
+
+        .result-section h2 {
+            margin-top: 0;
+
+            font-size: 1.3rem;
+        }
+
+        #qrCode {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            min-height: 280px;
+
+            padding: 20px;
+
+            background: #ffffff;
+
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+
+            overflow: auto;
+        }
+
+        /*
+            The QR library may generate either a canvas or an image.
+
+            max-width prevents the QR code from overflowing on
+            narrow phone screens.
+        */
+
+        #qrCode canvas,
+        #qrCode img {
+            max-width: 100%;
+            height: auto;
+        }
+
+
+        /* =========================================================
+           v1.0 - STATUS AND ERROR MESSAGES
+        ========================================================== */
+
+        #statusMessage {
+            min-height: 24px;
+
+            margin-top: 12px;
+
+            font-size: 0.95rem;
+
+            color: #374151;
+        }
+
+        .error {
+            color: #b91c1c !important;
+            font-weight: 700;
+        }
+
+        .success {
+            color: #047857 !important;
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+           v1.0 - PRIVACY NOTICE
+        ========================================================== */
+
+        .privacy-note {
+            margin-top: 24px;
+
+            padding: 14px;
+
+            border-radius: 10px;
+
+            background: #f3f4f6;
+
+            color: #4b5563;
+
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           v1.0 - MOBILE LAYOUT
+
+           On smaller screens the buttons stack vertically so they
+           are easier to tap.
+        ========================================================== */
+
+        @media (max-width: 520px) {
+
+            body {
+                padding: 12px;
+                align-items: flex-start;
+            }
+
+            .app {
+                margin-top: 12px;
+
+                padding: 22px 16px;
+
+                border-radius: 14px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            #qrCode {
+                min-height: 240px;
+                padding: 12px;
+            }
+        }
+
+
+        /* =========================================================
+           v1.0 - REDUCED MOTION ACCESSIBILITY
+
+           If the user has asked their operating system to reduce
+           animation, transitions are removed.
+        ========================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <main class="app" aria-labelledby="pageTitle">
+
+        <header>
+            <h1 id="pageTitle">
+                QR Code Generator
+            </h1>
+
+            <p class="intro">
+                Enter a web address, message, phone number,
+                email address, or other text to create a QR code.
+            </p>
+        </header>
+
+
+        <!-- =====================================================
+             v1.0 - QR CODE INPUT FORM
+        ====================================================== -->
+
+        <form id="qrForm">
+
+            <div class="form-group">
+
+                <label for="qrText">
+                    Text or Web Address
+                </label>
+
+                <textarea
+                    id="qrText"
+                    name="qrText"
+                    placeholder="Example: https://www.example.com"
+                    aria-describedby="inputHelp"
+                    required
+                ></textarea>
+
+                <p id="inputHelp">
+                    Anything entered here will be stored inside the QR code.
+                </p>
+
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    type="submit"
+                    class="generate-button"
+                    aria-label="Generate QR code from the entered text"
+                >
+                    Generate QR Code
+                </button>
+
+                <button
+                    type="button"
+                    id="clearButton"
+                    class="clear-button"
+                    aria-label="Clear the QR code and entered text"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- =====================================================
+             v1.0 - QR CODE RESULT
+        ====================================================== -->
+
+        <section
+            class="result-section"
+            aria-labelledby="resultTitle"
+        >
+
+            <h2 id="resultTitle">
+                Your QR Code
+            </h2>
+
+            <div
+                id="qrCode"
+                role="img"
+                aria-label="Generated QR code will appear here"
+            >
+                Your QR code will appear here.
+            </div>
+
+
+            <!--
+                aria-live politely announces status changes
+                to screen-reader users without interrupting them.
+            -->
+
+            <div
+                id="statusMessage"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+
+            <div class="button-row">
+
+                <button
+                    type="button"
+                    id="saveButton"
+                    class="save-button"
+                    aria-label="Save QR code as a PNG picture"
+                    disabled
+                >
+                    Save QR Code as Picture
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <aside
+            class="privacy-note"
+            aria-label="Privacy information"
+        >
+            <strong>Privacy:</strong>
+            Your text and QR code are processed in your browser.
+            The information you enter is not uploaded or submitted
+            to a server.
+        </aside>
+
+    </main>
+
+
+    <!-- =========================================================
+         QR CODE LIBRARY
+
+         QRCode.js performs the actual QR-code mathematics.
+
+         This JavaScript file is downloaded from a CDN when the
+         page loads. The text the user enters is NOT sent to the
+         CDN. QR-code generation happens locally in the browser.
+    ========================================================== -->
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07ozT3j7S2yfQG7NCBvU8j4wcJXlWJJdT/6RdXsj/Hk9CKlGNSKLkO8kK5QbFg=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">
+    </script>
+
+
+    <script>
+
+        // =========================================================
+        // QR CODE GENERATOR
+        // v1.0 - Initial build
+        //
+        // Everything below controls the behavior of the application.
+        //
+        // The browser performs all QR-code generation locally.
+        // The user's entered text is never submitted through a form
+        // and is never intentionally sent to a remote server.
+        // =========================================================
+
+
+        // ---------------------------------------------------------
+        // Get references to the important elements on the page.
+        //
+        // Saving these references here makes it easier to work with
+        // the elements later without repeatedly searching the page.
+        // ---------------------------------------------------------
+
+        const qrForm = document.getElementById("qrForm");
+
+        const qrText = document.getElementById("qrText");
+
+        const qrCodeContainer = document.getElementById("qrCode");
+
+        const saveButton = document.getElementById("saveButton");
+
+        const clearButton = document.getElementById("clearButton");
+
+        const statusMessage = document.getElementById("statusMessage");
+
+
+        // ---------------------------------------------------------
+        // Store the current QRCode object.
+        //
+        // This variable starts empty because no QR code has been
+        // generated yet.
+        // ---------------------------------------------------------
+
+        let currentQRCode = null;
+
+
+        // =========================================================
+        // FUNCTION: showStatus
+        //
+        // Displays feedback underneath the QR code.
+        //
+        // "type" can be:
+        //     "success"
+        //     "error"
+        //     ""
+        //
+        // The aria-live status area also allows screen readers to
+        // announce important changes.
+        // =========================================================
+
+        function showStatus(message, type = "") {
+
+            statusMessage.textContent = message;
+
+            statusMessage.className = type;
+
+        }
+
+
+        // =========================================================
+        // FUNCTION: clearQRCode
+        //
+        // Removes anything currently displayed inside the QR-code
+        // result container.
+        // =========================================================
+
+        function clearQRCode() {
+
+            qrCodeContainer.innerHTML = "";
+
+            currentQRCode = null;
+
+        }
+
+
+        // =========================================================
+        // FUNCTION: generateQRCode
+        //
+        // Reads the user's text and creates a QR code.
+        //
+        // QRCode.js renders the result directly inside the
+        // qrCodeContainer element.
+        // =========================================================
+
+        function generateQRCode() {
+
+            // Remove spaces from the beginning and end of the text.
+            // Spaces inside the user's message are preserved.
+
+            const text = qrText.value.trim();
+
+
+            // -----------------------------------------------------
+            // Do not generate an empty QR code.
+            //
+            // If nothing was entered, show an accessible error and
+            // move keyboard focus back to the text box.
+            // -----------------------------------------------------
+
+            if (!text) {
+
+                clearQRCode();
+
+                qrCodeContainer.textContent =
+                    "Your QR code will appear here.";
+
+                saveButton.disabled = true;
+
+                showStatus(
+                    "Please enter some text or a web address first.",
+                    "error"
+                );
+
+                qrText.focus();
+
+                return;
+            }
+
+
+            // -----------------------------------------------------
+            // Make sure the QRCode library successfully loaded.
+            //
+            // This could fail if the computer is offline when the
+            // page attempts to download the CDN library.
+            // -----------------------------------------------------
+
+            if (typeof QRCode === "undefined") {
+
+                showStatus(
+                    "The QR code library could not be loaded. Check your internet connection and reload the page.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // Remove the previous QR code before making a new one.
+
+            clearQRCode();
+
+
+            // -----------------------------------------------------
+            // Create the QR code.
+            //
+            // width and height control the generated QR image size.
+            //
+            // CorrectLevel.H provides strong error correction.
+            // That helps QR codes remain readable even when they
+            // are printed or slightly damaged.
+            // -----------------------------------------------------
+
+            currentQRCode = new QRCode(
+                qrCodeContainer,
+                {
+                    text: text,
+
+                    width: 300,
+
+                    height: 300,
+
+                    colorDark: "#000000",
+
+                    colorLight: "#ffffff",
+
+                    correctLevel: QRCode.CorrectLevel.H
+                }
+            );
+
+
+            // The QR library updates the page immediately.
+            // Enable the Save button now that a QR code exists.
+
+            saveButton.disabled = false;
+
+
+            // Update the accessibility description of the result.
+
+            qrCodeContainer.setAttribute(
+                "aria-label",
+                "Generated QR code for the entered information"
+            );
+
+
+            // Tell the user generation was successful.
+
+            showStatus(
+                "QR code created successfully.",
+                "success"
+            );
+
+        }
+
+
+        // =========================================================
+        // FORM SUBMISSION
+        //
+        // Normally an HTML form attempts to send information to
+        // another page or web server.
+        //
+        // preventDefault() stops that behavior completely.
+        //
+        // Instead, the browser calls our local generateQRCode()
+        // function.
+        // =========================================================
+
+        qrForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                generateQRCode();
+
+            }
+        );
+
+
+        // =========================================================
+        // SAVE BUTTON
+        //
+        // Saves the generated QR code as a PNG picture.
+        //
+        // Depending on the browser, QRCode.js may create either:
+        //
+        //     1. A <canvas> element
+        //     2. An <img> element
+        //
+        // The code below supports both possibilities.
+        // =========================================================
+
+        saveButton.addEventListener(
+            "click",
+            function() {
+
+                // Look for a canvas first.
+
+                const canvas =
+                    qrCodeContainer.querySelector("canvas");
+
+
+                // Also look for an image in case the QR library
+                // generated that format instead.
+
+                const image =
+                    qrCodeContainer.querySelector("img");
+
+
+                let imageData = "";
+
+
+                // -------------------------------------------------
+                // If we have a canvas, convert the pixels in the
+                // canvas to PNG image data.
+                // -------------------------------------------------
+
+                if (canvas) {
+
+                    imageData =
+                        canvas.toDataURL("image/png");
+
+                }
+
+
+                // -------------------------------------------------
+                // Otherwise, if an image exists, use its image data.
+                // -------------------------------------------------
+
+                else if (image) {
+
+                    imageData =
+                        image.src;
+
+                }
+
+
+                // -------------------------------------------------
+                // If neither exists, there is nothing to save.
+                // -------------------------------------------------
+
+                else {
+
+                    showStatus(
+                        "Please generate a QR code before saving.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // -------------------------------------------------
+                // Create a temporary download link.
+                //
+                // The link exists only in JavaScript. It does not
+                // need to be visible on the page.
+                // -------------------------------------------------
+
+                const downloadLink =
+                    document.createElement("a");
+
+
+                // Set the PNG image as the file to save.
+
+                downloadLink.href = imageData;
+
+
+                // Set the suggested file name.
+
+                downloadLink.download =
+                    "qr-code.png";
+
+
+                // -------------------------------------------------
+                // Add the temporary link to the document.
+                //
+                // Some browsers work more reliably if the link is
+                // temporarily part of the page before it is clicked.
+                // -------------------------------------------------
+
+                document.body.appendChild(
+                    downloadLink
+                );
+
+
+                // Trigger the browser's file-save behavior.
+
+                downloadLink.click();
+
+
+                // Remove the temporary link immediately afterward.
+
+                document.body.removeChild(
+                    downloadLink
+                );
+
+
+                // Let the user know the save was triggered.
+
+                showStatus(
+                    "QR code picture saved as qr-code.png.",
+                    "success"
+                );
+
+            }
+        );
+
+
+        // =========================================================
+        // CLEAR BUTTON
+        //
+        // Clears the user's text, removes the generated QR code,
+        // disables the Save button, and returns keyboard focus to
+        // the text-entry box.
+        // =========================================================
+
+        clearButton.addEventListener(
+            "click",
+            function() {
+
+                qrText.value = "";
+
+                clearQRCode();
+
+                qrCodeContainer.textContent =
+                    "Your QR code will appear here.";
+
+                qrCodeContainer.setAttribute(
+                    "aria-label",
+                    "Generated QR code will appear here"
+                );
+
+                saveButton.disabled = true;
+
+                showStatus("");
+
+                qrText.focus();
+
+            }
+        );
+
+
+        // =========================================================
+        // OPTIONAL KEYBOARD SHORTCUT
+        //
+        // Ctrl + Enter on Windows/Linux
+        // Command + Enter on Mac
+        //
+        // generates the QR code while the user is typing.
+        //
+        // This is in addition to the normal keyboard-accessible
+        // Generate button.
+        // =========================================================
+
+        qrText.addEventListener(
+            "keydown",
+            function(event) {
+
+                const shortcutPressed =
+                    (event.ctrlKey || event.metaKey) &&
+                    event.key === "Enter";
+
+
+                if (shortcutPressed) {
+
+                    event.preventDefault();
+
+                    generateQRCode();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- This tells the browser how to read the text on the page. -->
+    <meta charset="UTF-8">
+
+    <!-- This makes the page resize properly on phones, tablets, and computers. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- This is the title that appears on the browser tab. -->
+    <title>Christmas 2026 Countdown</title>
+
+    <style>
+
+        /* This makes element sizing easier to control throughout the page. */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* This creates the full-screen dark green Christmas background and moving glitter effect. */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+
+            background:
+                radial-gradient(circle at 20% 20%,
+                    rgba(255,255,255,.8) 0 2px,
+                    transparent 3px),
+                radial-gradient(circle at 80% 30%,
+                    rgba(255,215,0,.8) 0 2px,
+                    transparent 3px),
+                radial-gradient(circle at 40% 70%,
+                    rgba(255,255,255,.7) 0 2px,
+                    transparent 3px),
+                linear-gradient(
+                    to bottom,
+                    #061a0d,
+                    #0b3d1d,
+                    #062912
+                );
+
+            background-size:
+                90px 90px,
+                120px 120px,
+                150px 150px,
+                100% 100%;
+
+            animation: glitterMove 8s linear infinite;
+        }
+
+        /* This moves the glitter pattern across the background. */
+        @keyframes glitterMove {
+            from {
+                background-position:
+                    0 0,
+                    0 0,
+                    0 0,
+                    center;
+            }
+
+            to {
+                background-position:
+                    90px 180px,
+                    -120px 240px,
+                    150px 300px,
+                    center;
+            }
+        }
+
+        /* This positions the large decorative Christmas tree behind the countdown. */
+        .tree {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(1.3);
+            opacity: .28;
+            z-index: 0;
+
+            filter:
+                drop-shadow(0 0 20px #00ff66)
+                drop-shadow(0 0 40px #008833);
+        }
+
+        /* This styles the gold star at the top of the Christmas tree. */
+        .star {
+            text-align: center;
+            font-size: 85px;
+            animation: starGlow 1.5s infinite alternate;
+        }
+
+        /* This makes the Christmas tree star glow brighter and dimmer. */
+        @keyframes starGlow {
+            from {
+                filter: drop-shadow(0 0 5px gold);
+            }
+
+            to {
+                filter: drop-shadow(0 0 25px gold);
+            }
+        }
+
+        /* This creates the top section of the Christmas tree. */
+        .tree-part {
+            width: 0;
+            height: 0;
+            margin: -35px auto 0;
+            border-left: 180px solid transparent;
+            border-right: 180px solid transparent;
+            border-bottom: 230px solid #0ca34a;
+            filter: drop-shadow(0 0 15px #16ff72);
+        }
+
+        /* This creates the wider middle section of the Christmas tree. */
+        .tree-part.middle {
+            border-left-width: 230px;
+            border-right-width: 230px;
+            border-bottom-width: 280px;
+            margin-top: -130px;
+        }
+
+        /* This creates the widest bottom section of the Christmas tree. */
+        .tree-part.bottom {
+            border-left-width: 290px;
+            border-right-width: 290px;
+            border-bottom-width: 340px;
+            margin-top: -160px;
+        }
+
+        /* This styles each small glitter dot that appears around the screen. */
+        .sparkle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            pointer-events: none;
+            z-index: 1;
+            animation: sparkleAnimation 2s infinite ease-in-out;
+        }
+
+        /* This makes each glitter dot brighten, grow, and shrink repeatedly. */
+        @keyframes sparkleAnimation {
+            0% {
+                opacity: .15;
+                transform: scale(.4);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.8);
+                box-shadow:
+                    0 0 12px white,
+                    0 0 22px gold;
+            }
+
+            100% {
+                opacity: .15;
+                transform: scale(.4);
+            }
+        }
+
+        /* This creates the dark transparent panel that holds the countdown. */
+        .countdown-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 95%;
+            max-width: 1300px;
+            padding: 40px;
+            border-radius: 30px;
+            background: rgba(0, 20, 10, .60);
+            border: 2px solid rgba(255,255,255,.35);
+
+            box-shadow:
+                0 0 30px rgba(255,255,255,.20),
+                0 0 70px rgba(0,255,80,.20);
+
+            backdrop-filter: blur(5px);
+        }
+
+        /* This styles the main Christmas countdown heading. */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: clamp(42px, 7vw, 90px);
+            color: white;
+
+            text-shadow:
+                0 0 10px red,
+                0 0 20px green,
+                0 0 30px gold;
+        }
+
+        /* This styles the date displayed underneath the heading. */
+        .subtitle {
+            font-size: clamp(20px, 3vw, 36px);
+            margin-bottom: 45px;
+            color: #fff4c2;
+        }
+
+        /* This places the four countdown boxes next to each other and allows them to wrap on small screens. */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* This styles each individual days, hours, minutes, and seconds box. */
+        .time-box {
+            min-width: 180px;
+            padding: 25px 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,.10);
+            border: 2px solid rgba(255,255,255,.3);
+            box-shadow: 0 0 20px rgba(255,255,255,.15);
+        }
+
+        /* This makes the countdown numbers very large and easy to read. */
+        .number {
+            display: block;
+            font-size: clamp(65px, 10vw, 140px);
+            line-height: 1;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            transition: color .4s ease;
+
+            text-shadow:
+                0 0 10px currentColor,
+                0 0 25px currentColor;
+        }
+
+        /* This makes alternating countdown numbers red. */
+        .red {
+            color: #ff2e2e;
+        }
+
+        /* This makes alternating countdown numbers green. */
+        .green {
+            color: #32e875;
+        }
+
+        /* This styles the DAYS, HOURS, MINUTES, and SECONDS labels. */
+        .label {
+            display: block;
+            margin-top: 12px;
+            font-size: clamp(18px, 2vw, 28px);
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: white;
+        }
+
+        /* This styles the message underneath the countdown timer. */
+        .message {
+            margin-top: 35px;
+            font-size: clamp(20px, 3vw, 38px);
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        /* This styles the large celebration message that appears when Christmas arrives. */
+        .celebration {
+            display: none;
+            font-size: clamp(55px, 10vw, 140px);
+            font-weight: 900;
+            color: #ffd700;
+            padding: 30px 10px;
+
+            text-shadow:
+                0 0 10px red,
+                0 0 25px green,
+                0 0 40px gold;
+
+            animation: celebrationGlow 1s infinite alternate;
+        }
+
+        /* This makes the Merry Christmas message glow and gently grow. */
+        @keyframes celebrationGlow {
+            from {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+
+            to {
+                transform: scale(1.05);
+                filter: brightness(1.4);
+            }
+        }
+
+        /* This adjusts the countdown layout for smaller phone screens. */
+        @media (max-width: 700px) {
+            .countdown-container {
+                padding: 25px 12px;
+            }
+
+            .time-box {
+                min-width: 135px;
+                padding: 20px 12px;
+            }
+
+            .tree {
+                transform: translate(-50%, -50%) scale(.7);
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- This creates the decorative Christmas tree in the background. -->
+    <div class="tree">
+
+        <!-- This places a glowing star at the top of the tree. -->
+        <div class="star">⭐</div>
+
+        <!-- These three sections create the triangular shape of the Christmas tree. -->
+        <div class="tree-part"></div>
+        <div class="tree-part middle"></div>
+        <div class="tree-part bottom"></div>
+
+    </div>
+
+    <!-- This contains all of the visible Christmas countdown information. -->
+    <div class="countdown-container">
+
+        <!-- This displays the main title. -->
+        <h1>🎄 Countdown to Christmas 🎄</h1>
+
+        <!-- This displays the Christmas date underneath the title. -->
+        <div class="subtitle">
+            Christmas Day • December 25, 2026
+        </div>
+
+        <!-- This contains the four countdown boxes. -->
+        <div id="countdown" class="countdown">
+
+            <!-- This box displays the number of days remaining. -->
+            <div class="time-box">
+                <span id="days" class="number red">00</span>
+                <span class="label">DAYS</span>
+            </div>
+
+            <!-- This box displays the number of hours remaining. -->
+            <div class="time-box">
+                <span id="hours" class="number green">00</span>
+                <span class="label">HOURS</span>
+            </div>
+
+            <!-- This box displays the number of minutes remaining. -->
+            <div class="time-box">
+                <span id="minutes" class="number red">00</span>
+                <span class="label">MINUTES</span>
+            </div>
+
+            <!-- This box displays the number of seconds remaining. -->
+            <div class="time-box">
+                <span id="seconds" class="number green">00</span>
+                <span class="label">SECONDS</span>
+            </div>
+
+        </div>
+
+        <!-- This is hidden until the countdown reaches Christmas. -->
+        <div id="celebration" class="celebration">
+            🎅 MERRY CHRISTMAS! 🎄
+        </div>
+
+        <!-- This displays a message underneath the countdown while it is running. -->
+        <div id="message" class="message">
+            ✨ Until Christmas Morning! ✨
+        </div>
+
+    </div>
+
+    <script>
+
+        /* This permanently sets the target to December 25, 2026 at 12:00 AM Eastern Standard Time. */
+        const christmasDate =
+            new Date("2026-12-25T00:00:00-05:00");
+
+        /* These lines connect the JavaScript to the countdown numbers on the page. */
+        const daysDisplay =
+            document.getElementById("days");
+
+        const hoursDisplay =
+            document.getElementById("hours");
+
+        const minutesDisplay =
+            document.getElementById("minutes");
+
+        const secondsDisplay =
+            document.getElementById("seconds");
+
+        /* These lines connect JavaScript to the countdown, celebration, and bottom message areas. */
+        const countdownDisplay =
+            document.getElementById("countdown");
+
+        const celebrationDisplay =
+            document.getElementById("celebration");
+
+        const messageDisplay =
+            document.getElementById("message");
+
+        /* This function checks the current time and calculates exactly how much time remains until Christmas. */
+        function updateCountdown() {
+
+            /* This gets the current real date and time from the device. */
+            const now = new Date();
+
+            /* This calculates the number of milliseconds between right now and Christmas. */
+            const distance =
+                christmasDate.getTime() -
+                now.getTime();
+
+            /* This replaces the countdown numbers with the Christmas celebration when the countdown reaches zero. */
+            if (distance <= 0) {
+
+                countdownDisplay.style.display = "none";
+
+                celebrationDisplay.style.display = "block";
+
+                messageDisplay.textContent =
+                    "✨ Christmas 2026 Has Arrived! ✨";
+
+                return;
+            }
+
+            /* This calculates the number of complete days remaining. */
+            const days =
+                Math.floor(
+                    distance /
+                    (1000 * 60 * 60 * 24)
+                );
+
+            /* This calculates the number of hours remaining after the complete days are removed. */
+            const hours =
+                Math.floor(
+                    (distance %
+                    (1000 * 60 * 60 * 24)) /
+                    (1000 * 60 * 60)
+                );
+
+            /* This calculates the number of minutes remaining after the complete hours are removed. */
+            const minutes =
+                Math.floor(
+                    (distance %
+                    (1000 * 60 * 60)) /
+                    (1000 * 60)
+                );
+
+            /* This calculates the number of seconds remaining after the complete minutes are removed. */
+            const seconds =
+                Math.floor(
+                    (distance %
+                    (1000 * 60)) /
+                    1000
+                );
+
+            /* This places the calculated days into the DAYS box. */
+            daysDisplay.textContent =
+                String(days).padStart(2, "0");
+
+            /* This places the calculated hours into the HOURS box. */
+            hoursDisplay.textContent =
+                String(hours).padStart(2, "0");
+
+            /* This places the calculated minutes into the MINUTES box. */
+            minutesDisplay.textContent =
+                String(minutes).padStart(2, "0");
+
+            /* This places the calculated seconds into the SECONDS box. */
+            secondsDisplay.textContent =
+                String(seconds).padStart(2, "0");
+        }
+
+        /* This function creates the animated glitter dots across the page. */
+        function createSparkles() {
+
+            /* This repeats the glitter creation process 80 times. */
+            for (let i = 0; i < 80; i++) {
+
+                /* This creates one new glitter dot. */
+                const sparkle =
+                    document.createElement("div");
+
+                /* This gives the new dot the sparkle styling from the CSS. */
+                sparkle.classList.add("sparkle");
+
+                /* This places the glitter dot at a random horizontal position. */
+                sparkle.style.left =
+                    Math.random() * 100 + "vw";
+
+                /* This places the glitter dot at a random vertical position. */
+                sparkle.style.top =
+                    Math.random() * 100 + "vh";
+
+                /* This gives each glitter dot a different animation starting time. */
+                sparkle.style.animationDelay =
+                    Math.random() * 3 + "s";
+
+                /* This gives each glitter dot a slightly different animation speed. */
+                sparkle.style.animationDuration =
+                    (1.5 + Math.random() * 2) + "s";
+
+                /* This chooses a random size for the glitter dot. */
+                const size =
+                    3 + Math.random() * 7;
+
+                /* This sets the width of the glitter dot. */
+                sparkle.style.width =
+                    size + "px";
+
+                /* This sets the height of the glitter dot. */
+                sparkle.style.height =
+                    size + "px";
+
+                /* This adds the completed glitter dot to the page. */
+                document.body.appendChild(sparkle);
+            }
+        }
+
+        /* This creates all of the glitter when the page first opens. */
+        createSparkles();
+
+        /* This calculates and displays the countdown immediately when the page opens. */
+        updateCountdown();
+
+        /* This automatically recalculates the countdown every second so it continuously moves toward Christmas. */
+        setInterval(updateCountdown, 1000);
+
+    </script>
+
+</body>
+</html>

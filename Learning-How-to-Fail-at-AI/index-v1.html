@@ -1,0 +1,2995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!--
+        v1.1 - Learning How to Fail at AI
+        Added the "Loving Being a Mom" section.
+
+        Everything for this website is contained in this single HTML file
+        except for the optional hero image:
+        images/busy-mom-ai.png
+
+        No information is sent to a server.
+        Notes, favorites, and theme preferences are stored only
+        in the visitor's browser using localStorage.
+    -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Learning How to Fail at AI - a colorful, funny, practical AI resource hub for busy moms and overwhelmed humans."
+    >
+
+    <title>Learning How to Fail at AI</title>
+
+    <style>
+        /* =========================================================
+           v1.1 - MAIN COLORS
+           These variables control the colors used throughout the site.
+           ========================================================= */
+
+        :root {
+            --blue: #1976d2;
+            --pink: #ef4d9b;
+            --green: #3ca66b;
+            --yellow: #ffd447;
+            --purple: #7952b3;
+            --orange: #ff8c42;
+
+            --background: #fffaf2;
+            --surface: #ffffff;
+            --surface-soft: #f8f8ff;
+            --text: #24303f;
+            --muted: #606b78;
+            --border: #d9dce3;
+            --shadow: rgba(35, 45, 60, 0.14);
+
+            --max-width: 1180px;
+        }
+
+        /* =========================================================
+           DARK MODE COLORS
+           These colors replace the normal colors when dark mode is on.
+           ========================================================= */
+
+        body.dark {
+            --background: #151923;
+            --surface: #202633;
+            --surface-soft: #282f3e;
+            --text: #f8f8f8;
+            --muted: #c8cfda;
+            --border: #40495a;
+            --shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        /* =========================================================
+           BASIC PAGE RESET
+           This helps the site display consistently across browsers.
+           ========================================================= */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(239, 77, 155, 0.12),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at top right,
+                    rgba(25, 118, 210, 0.12),
+                    transparent 30%
+                ),
+                var(--background);
+
+            transition:
+                background-color 0.25s ease,
+                color 0.25s ease;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        a {
+            color: var(--blue);
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           ACCESSIBILITY
+           The skip link lets keyboard users jump directly to the page.
+           ========================================================= */
+
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 1rem;
+            z-index: 9999;
+
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+
+            background: #000;
+            color: #fff;
+        }
+
+        .skip-link:focus {
+            top: 1rem;
+        }
+
+        :focus-visible {
+            outline: 4px solid var(--yellow);
+            outline-offset: 4px;
+        }
+
+        /* =========================================================
+           SHARED PAGE WIDTH
+           ========================================================= */
+
+        .container {
+            width: min(calc(100% - 2rem), var(--max-width));
+            margin-inline: auto;
+        }
+
+        /* =========================================================
+           HEADER
+           ========================================================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar {
+            min-height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 1rem;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+
+            color: var(--text);
+            text-decoration: none;
+
+            font-weight: 900;
+        }
+
+        .brand-badge {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: linear-gradient(
+                135deg,
+                var(--pink),
+                var(--yellow)
+            );
+
+            font-size: 1.35rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .nav-links a:hover {
+            color: var(--pink);
+        }
+
+        /* =========================================================
+           BUTTONS
+           ========================================================= */
+
+        .button {
+            min-height: 44px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 0.45rem;
+
+            padding: 0.7rem 1rem;
+
+            border: 0;
+            border-radius: 999px;
+
+            background: var(--blue);
+            color: #fff;
+
+            text-decoration: none;
+            font-weight: 800;
+
+            box-shadow: 0 5px 14px var(--shadow);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px var(--shadow);
+        }
+
+        .button.pink {
+            background: var(--pink);
+        }
+
+        .button.green {
+            background: var(--green);
+        }
+
+        .button.yellow {
+            background: var(--yellow);
+            color: #222;
+        }
+
+        .button.purple {
+            background: var(--purple);
+        }
+
+        .button.secondary {
+            background: var(--surface);
+            color: var(--text);
+
+            border: 2px solid var(--border);
+
+            box-shadow: none;
+        }
+
+        /* =========================================================
+           HERO SECTION
+           ========================================================= */
+
+        .hero {
+            padding: 4rem 0 3rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .eyebrow {
+            display: inline-block;
+
+            margin-bottom: 0.8rem;
+            padding: 0.4rem 0.75rem;
+
+            border-radius: 999px;
+
+            background: var(--yellow);
+            color: #222;
+
+            font-weight: 900;
+        }
+
+        h1,
+        h2,
+        h3 {
+            line-height: 1.12;
+        }
+
+        h1 {
+            margin: 0;
+
+            font-size: clamp(2.7rem, 8vw, 5.9rem);
+            letter-spacing: -0.055em;
+        }
+
+        .gradient-text {
+            background: linear-gradient(
+                90deg,
+                var(--blue),
+                var(--pink),
+                var(--green)
+            );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            color: transparent;
+        }
+
+        .tagline {
+            margin: 1.15rem 0;
+
+            font-size: clamp(1.15rem, 2vw, 1.45rem);
+            font-weight: 800;
+        }
+
+        .hero-copy {
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 0.8rem;
+
+            margin-top: 1.5rem;
+        }
+
+        .hero-art {
+            min-height: 430px;
+
+            position: relative;
+            overflow: hidden;
+
+            border: 4px solid var(--surface);
+            border-radius: 34px;
+
+            background:
+                linear-gradient(
+                    140deg,
+                    #bfe5ff,
+                    #ffd3e8 38%,
+                    #fff3a4 70%,
+                    #c9f4d9
+                );
+
+            box-shadow: 0 20px 50px var(--shadow);
+        }
+
+        .hero-art img {
+            width: 100%;
+            height: 100%;
+            min-height: 430px;
+
+            object-fit: cover;
+        }
+
+        .image-fallback {
+            display: none;
+            place-items: center;
+
+            min-height: 430px;
+            padding: 2rem;
+
+            text-align: center;
+            font-size: 4.5rem;
+        }
+
+        .image-fallback p {
+            font-size: 1.1rem;
+            font-weight: 900;
+        }
+
+        /* =========================================================
+           DISCLAIMER
+           ========================================================= */
+
+        .disclaimer {
+            margin-top: 2rem;
+            padding: 1.25rem;
+
+            border: 3px dashed var(--pink);
+            border-radius: 22px;
+
+            background: var(--surface);
+        }
+
+        .disclaimer strong {
+            color: var(--pink);
+        }
+
+        /* =========================================================
+           SEARCH BOX
+           ========================================================= */
+
+        .search-panel {
+            margin: 2rem auto 1rem;
+            padding: 1.25rem;
+
+            border-radius: 24px;
+
+            background: var(--surface);
+
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .search-panel label {
+            display: block;
+
+            margin-bottom: 0.45rem;
+
+            font-weight: 900;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .search-row input {
+            flex: 1;
+
+            width: 100%;
+            min-height: 48px;
+
+            padding: 0.8rem 1rem;
+
+            border: 2px solid var(--border);
+            border-radius: 14px;
+
+            background: var(--surface-soft);
+            color: var(--text);
+        }
+
+        #searchStatus {
+            margin-top: 0.65rem;
+
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* =========================================================
+           PAGE SECTIONS
+           ========================================================= */
+
+        main section {
+            padding: 3.6rem 0;
+            scroll-margin-top: 92px;
+        }
+
+        .section-heading {
+            max-width: 800px;
+            margin-bottom: 1.8rem;
+        }
+
+        .section-heading h2 {
+            margin: 0 0 0.5rem;
+
+            font-size: clamp(2rem, 5vw, 3.4rem);
+        }
+
+        .section-heading p {
+            margin: 0;
+
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 1rem;
+        }
+
+        .grid.two {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .card {
+            position: relative;
+
+            padding: 1.25rem;
+
+            border: 2px solid var(--border);
+            border-radius: 22px;
+
+            background: var(--surface);
+
+            box-shadow: 0 9px 25px var(--shadow);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+        }
+
+        .card.blue {
+            border-top: 8px solid var(--blue);
+        }
+
+        .card.pink {
+            border-top: 8px solid var(--pink);
+        }
+
+        .card.green {
+            border-top: 8px solid var(--green);
+        }
+
+        .card.yellow {
+            border-top: 8px solid var(--yellow);
+        }
+
+        .card.purple {
+            border-top: 8px solid var(--purple);
+        }
+
+        .big-number {
+            width: 42px;
+            height: 42px;
+
+            display: inline-grid;
+            place-items: center;
+
+            margin-bottom: 0.5rem;
+
+            border-radius: 50%;
+
+            background: var(--yellow);
+            color: #222;
+
+            font-weight: 900;
+        }
+
+        /* =========================================================
+           LOVING BEING A MOM SECTION
+           This special section uses a colorful gradient background.
+           ========================================================= */
+
+        .mom-love-card {
+            position: relative;
+            overflow: hidden;
+
+            padding: clamp(1.5rem, 5vw, 3rem);
+
+            border: 3px solid var(--pink);
+            border-radius: 30px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(239, 77, 155, 0.14),
+                    rgba(255, 212, 71, 0.18),
+                    rgba(60, 166, 107, 0.13),
+                    rgba(25, 118, 210, 0.12)
+                );
+
+            box-shadow: 0 12px 35px var(--shadow);
+        }
+
+        .mom-love-card::after {
+            content: "♥";
+
+            position: absolute;
+            right: 1.5rem;
+            top: 0.3rem;
+
+            font-size: 7rem;
+
+            color: rgba(239, 77, 155, 0.10);
+
+            pointer-events: none;
+        }
+
+        .mom-love-card h3 {
+            margin-top: 0;
+
+            color: var(--pink);
+
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+        }
+
+        .mom-love-card p {
+            max-width: 900px;
+
+            font-size: 1.1rem;
+        }
+
+        /* =========================================================
+           QUOTE BOX
+           ========================================================= */
+
+        .quote-box {
+            padding: 1.5rem;
+
+            border: 2px dashed var(--blue);
+            border-radius: 25px;
+
+            background:
+                linear-gradient(
+                    130deg,
+                    rgba(25, 118, 210, 0.12),
+                    rgba(239, 77, 155, 0.12),
+                    rgba(60, 166, 107, 0.12)
+                );
+
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           PROMPTS
+           ========================================================= */
+
+        .prompt-text {
+            padding: 0.9rem;
+
+            border-left: 5px solid var(--pink);
+            border-radius: 14px;
+
+            background: var(--surface-soft);
+
+            font-family: "Courier New", monospace;
+            font-size: 0.95rem;
+        }
+
+        .prompt-actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 0.55rem;
+
+            margin-top: 0.9rem;
+        }
+
+        .small-button {
+            min-height: 40px;
+
+            padding: 0.55rem 0.8rem;
+
+            border: 2px solid var(--border);
+            border-radius: 999px;
+
+            background: var(--surface);
+            color: var(--text);
+
+            font-weight: 800;
+        }
+
+        .small-button[aria-pressed="true"] {
+            background: var(--yellow);
+            color: #222;
+
+            border-color: #222;
+        }
+
+        /* =========================================================
+           NOTES AND TEXT AREAS
+           ========================================================= */
+
+        textarea {
+            width: 100%;
+            min-height: 160px;
+
+            resize: vertical;
+
+            padding: 1rem;
+
+            border: 2px solid var(--border);
+            border-radius: 16px;
+
+            background: var(--surface-soft);
+            color: var(--text);
+        }
+
+        .privacy-note {
+            color: var(--green);
+            font-weight: 900;
+        }
+
+        .save-status {
+            min-height: 1.5rem;
+
+            margin-top: 0.5rem;
+
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        #thoughtResponse {
+            margin-top: 1rem;
+            padding: 1rem;
+
+            border-radius: 15px;
+
+            background: var(--surface-soft);
+
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           DAILY CHALLENGE
+           ========================================================= */
+
+        .challenge-box {
+            padding: 2rem;
+
+            border-radius: 30px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--yellow),
+                    #fff0a3
+                );
+
+            color: #272727;
+
+            box-shadow: 0 12px 30px var(--shadow);
+        }
+
+        .challenge-box h3 {
+            margin-top: 0;
+
+            font-size: 2rem;
+        }
+
+        #challengeText {
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+        /* =========================================================
+           AI TERMS
+           ========================================================= */
+
+        details {
+            margin-bottom: 0.8rem;
+            padding: 1rem;
+
+            border: 2px solid var(--border);
+            border-radius: 16px;
+
+            background: var(--surface);
+        }
+
+        summary {
+            cursor: pointer;
+
+            font-size: 1.05rem;
+            font-weight: 900;
+        }
+
+        .resource-link {
+            display: inline-flex;
+
+            margin-top: 0.6rem;
+
+            font-weight: 900;
+        }
+
+        /* JavaScript uses this class to hide nonmatching search results. */
+        .search-hidden {
+            display: none !important;
+        }
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+
+        footer {
+            margin-top: 3rem;
+            padding: 3rem 0;
+
+            background: #192334;
+            color: #fff;
+
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0.4rem auto;
+        }
+
+        .footer-big {
+            font-size: 1.25rem;
+            font-weight: 900;
+        }
+
+        /* =========================================================
+           TABLET LAYOUT
+           ========================================================= */
+
+        @media (max-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid,
+            .grid.two {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* =========================================================
+           PHONE LAYOUT
+           ========================================================= */
+
+        @media (max-width: 620px) {
+            .container {
+                width: min(
+                    calc(100% - 1.25rem),
+                    var(--max-width)
+                );
+            }
+
+            .hero {
+                padding-top: 2.5rem;
+            }
+
+            .grid,
+            .grid.two {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-art,
+            .hero-art img,
+            .image-fallback {
+                min-height: 300px;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .brand span:last-child {
+                display: none;
+            }
+
+            h1 {
+                font-size: clamp(2.5rem, 15vw, 4rem);
+            }
+        }
+
+        /* =========================================================
+           REDUCED MOTION ACCESSIBILITY
+           ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+
+            .button:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Keyboard users can skip the navigation. -->
+    <a class="skip-link" href="#mainContent">
+        Skip to main content
+    </a>
+
+    <!-- =========================================================
+         HEADER AND NAVIGATION
+         ========================================================= -->
+
+    <header>
+        <div class="container topbar">
+
+            <a
+                class="brand"
+                href="#top"
+                aria-label="Learning How to Fail at AI home"
+            >
+                <span class="brand-badge" aria-hidden="true">
+                    🤖
+                </span>
+
+                <span>
+                    Learning How to Fail at AI
+                </span>
+            </a>
+
+            <nav
+                class="nav-links"
+                aria-label="Main navigation"
+            >
+                <a href="#start">Start Here</a>
+                <a href="#mom-ai">AI for Moms</a>
+                <a href="#loving-mom">Being Mom</a>
+                <a href="#prompts">Prompts</a>
+                <a href="#safety">Safety</a>
+                <a href="#fails">AI Fails</a>
+                <a href="#resources">Resources</a>
+            </nav>
+
+            <button
+                class="button secondary"
+                id="darkModeButton"
+                type="button"
+                aria-pressed="false"
+                aria-label="Switch to dark mode"
+            >
+                🌙 Dark
+            </button>
+
+        </div>
+    </header>
+
+    <main id="mainContent">
+
+        <!-- =====================================================
+             HERO
+             ===================================================== -->
+
+        <section class="hero" id="top">
+
+            <div class="container hero-grid">
+
+                <div>
+
+                    <span class="eyebrow">
+                        For busy moms & overwhelmed humans ☕
+                    </span>
+
+                    <h1>
+                        Learning How to
+                        <span class="gradient-text">
+                            Fail at AI
+                        </span>
+                    </h1>
+
+                    <p class="tagline">
+                        Use the robot. Check the robot.
+                        Then go get your life back.
+                    </p>
+
+                    <p class="hero-copy">
+                        AI is here to stay. What it looks like tomorrow?
+                        Who knows. This is a judgment-free zone for learning
+                        how to use AI safely, catch it when it confidently
+                        makes stuff up, and save a little time for the people
+                        and things that actually matter.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <a
+                            class="button pink"
+                            href="#start"
+                        >
+                            I am overwhelmed. Start here.
+                        </a>
+
+                        <a
+                            class="button green"
+                            href="#prompts"
+                        >
+                            Give me useful prompts
+                        </a>
+
+                    </div>
+
+                    <div
+                        class="disclaimer"
+                        role="note"
+                    >
+                        <strong>
+                            Very important disclaimer:
+                        </strong>
+
+                        I am a busy mom and adult student learning AI
+                        alongside everyone else. I am not an AI expert,
+                        lawyer, doctor, financial adviser, cybersecurity
+                        professional, or magical all-knowing robot whisperer.
+
+                        AI can be wrong. Sometimes spectacularly wrong.
+
+                        Verify important information with reliable sources
+                        and qualified humans.
+                    </div>
+
+                </div>
+
+                <div class="hero-art">
+
+                    <img
+                        id="heroImage"
+                        src="images/busy-mom-ai.png"
+                        alt="Colorful cartoon of a busy mom juggling a laptop, coffee, phone, kid items, household responsibilities and a friendly AI robot"
+                    >
+
+                    <div
+                        class="image-fallback"
+                        id="imageFallback"
+                        aria-label="Cartoon placeholder showing a busy mom learning AI"
+                    >
+                        <div>
+                            ☕ 👩‍💻 🤖 🎒 📱 🧺
+
+                            <p>
+                                Busy mom + AI + approximately
+                                47 things happening at once.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SEARCH
+             ===================================================== -->
+
+        <section aria-labelledby="searchHeading">
+
+            <div class="container">
+
+                <div class="search-panel">
+
+                    <label
+                        id="searchHeading"
+                        for="siteSearch"
+                    >
+                        🔎 Find something without scrolling for 14 years
+                    </label>
+
+                    <div class="search-row">
+
+                        <input
+                            type="search"
+                            id="siteSearch"
+                            placeholder="Try: meal planning, privacy, kids, email, scams..."
+                            autocomplete="off"
+                        >
+
+                        <button
+                            class="button yellow"
+                            id="clearSearchButton"
+                            type="button"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="searchStatus"
+                        aria-live="polite"
+                    >
+                        Search the tips, prompts, safety advice,
+                        fails, and resources below.
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             START HERE
+             ===================================================== -->
+
+        <section
+            id="start"
+            aria-labelledby="startHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="startHeading">
+                        AI for the Overwhelmed
+                    </h2>
+
+                    <p>
+                        Five things to know before you start pushing buttons.
+                    </p>
+
+                </div>
+
+                <div class="grid">
+
+                    <article class="card blue searchable">
+
+                        <span class="big-number">1</span>
+
+                        <h3>
+                            You do not need to understand everything.
+                        </h3>
+
+                        <p>
+                            You drive a car without rebuilding the engine.
+                            You can use AI without earning a computer
+                            science degree.
+                        </p>
+
+                    </article>
+
+                    <article class="card pink searchable">
+
+                        <span class="big-number">2</span>
+
+                        <h3>
+                            AI can sound confident and still be wrong.
+                        </h3>
+
+                        <p>
+                            Confidence is not proof.
+                            Ask for sources.
+                            Check important facts yourself.
+                        </p>
+
+                    </article>
+
+                    <article class="card green searchable">
+
+                        <span class="big-number">3</span>
+
+                        <h3>
+                            Do not feed it your family secrets.
+                        </h3>
+
+                        <p>
+                            Think before entering private health,
+                            financial, school, workplace, password,
+                            or identity information.
+                        </p>
+
+                    </article>
+
+                    <article class="card yellow searchable">
+
+                        <span class="big-number">4</span>
+
+                        <h3>
+                            A better question usually gets a better answer.
+                        </h3>
+
+                        <p>
+                            Tell AI what you need, who it is for,
+                            the tone, the length, and what constraints matter.
+                        </p>
+
+                    </article>
+
+                    <article class="card purple searchable">
+
+                        <span class="big-number">5</span>
+
+                        <h3>
+                            The goal is not more AI.
+                            The goal is more time.
+                        </h3>
+
+                        <p>
+                            If AI saves 20 minutes on a tedious task,
+                            spend those 20 minutes somewhere that
+                            matters to you.
+                        </p>
+
+                    </article>
+
+                    <aside class="quote-box searchable">
+
+                        “If the robot saves me from rewriting one school
+                        email while I am simultaneously packing lunch,
+                        finding a missing shoe, and pretending I remembered
+                        Spirit Day, we are making progress.”
+
+                    </aside>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             AI FOR MOMS
+             ===================================================== -->
+
+        <section
+            id="mom-ai"
+            aria-labelledby="momAIHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="momAIHeading">
+                        AI for Moms: Give Me My Time Back
+                    </h2>
+
+                    <p>
+                        Places where AI can help with the annoying first
+                        draft, organizing, sorting, and
+                        “please just get this out of my head”
+                        part of everyday life.
+                    </p>
+
+                </div>
+
+                <div class="grid">
+
+                    <article class="card pink searchable">
+
+                        <h3>🍝 Dinner Brain</h3>
+
+                        <p>
+                            Turn ingredients you already have into meal
+                            ideas, grocery lists, lunchbox options,
+                            or a five-day dinner plan.
+                        </p>
+
+                    </article>
+
+                    <article class="card blue searchable">
+
+                        <h3>📧 Email Rescue</h3>
+
+                        <p>
+                            Turn your “I am annoyed but I need to sound normal”
+                            draft into a polite school, work, or family email.
+                        </p>
+
+                    </article>
+
+                    <article class="card green searchable">
+
+                        <h3>📅 Schedule Chaos</h3>
+
+                        <p>
+                            Give AI your list of appointments, practices,
+                            errands, and tasks and ask it to organize them
+                            into a realistic plan.
+                        </p>
+
+                    </article>
+
+                    <article class="card yellow searchable">
+
+                        <h3>🎉 Party Planning</h3>
+
+                        <p>
+                            Brainstorm menus, games, invitation wording,
+                            themes, supply lists, and age-appropriate activities.
+                        </p>
+
+                    </article>
+
+                    <article class="card purple searchable">
+
+                        <h3>📚 School Stuff</h3>
+
+                        <p>
+                            Explain a topic in kid-friendly language,
+                            create practice questions, or help turn a giant
+                            school notice into a short checklist.
+                        </p>
+
+                    </article>
+
+                    <article class="card blue searchable">
+
+                        <h3>🧠 Mental Load Dump</h3>
+
+                        <p>
+                            Paste in the giant list bouncing around your brain
+                            and ask AI to sort it into “today,”
+                            “this week,” and “can wait.”
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             v1.1 - LOVING BEING A MOM
+             This is the new section added to the existing website.
+             ===================================================== -->
+
+        <section
+            id="loving-mom"
+            aria-labelledby="lovingMomHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="lovingMomHeading">
+                        💖 Loving Being a Mom
+                    </h2>
+
+                    <p>
+                        Because getting time back only matters
+                        if I get to spend it on what I love most.
+                    </p>
+
+                </div>
+
+                <div class="mom-love-card searchable">
+
+                    <h3>
+                        Mom is still my favorite job.
+                    </h3>
+
+                    <p>
+                        I love being a mom. The schedules are chaotic,
+                        the laundry is endless, and someone is always
+                        looking for a missing shoe—but I would not trade it.
+                    </p>
+
+                    <p>
+                        Learning to use AI is not about doing more.
+                        It is about spending less time on the busywork
+                        so I can be more present for the hugs, the laughs,
+                        the little moments, and the people who matter most.
+                    </p>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             READY-TO-COPY PROMPTS
+             ===================================================== -->
+
+        <section
+            id="prompts"
+            aria-labelledby="promptsHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="promptsHeading">
+                        Copy, Paste, Survive
+                    </h2>
+
+                    <p>
+                        Useful starter prompts for days when your brain
+                        has already opened 36 tabs.
+                    </p>
+
+                </div>
+
+                <div class="grid two">
+
+                    <article
+                        class="card pink searchable prompt-card"
+                        data-prompt-id="dinner"
+                    >
+
+                        <h3>🍽️ Feed Everyone</h3>
+
+                        <p class="prompt-text">
+                            I need five simple dinners for this week.
+                            Keep each meal under 30 minutes.
+                            My family likes [foods].
+                            Avoid [foods].
+                            Give me the meal plan first,
+                            then one combined grocery list.
+                        </p>
+
+                        <div class="prompt-actions">
+
+                            <button
+                                class="small-button copy-prompt"
+                                type="button"
+                            >
+                                Copy prompt
+                            </button>
+
+                            <button
+                                class="small-button favorite-prompt"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                ☆ Favorite
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    <article
+                        class="card blue searchable prompt-card"
+                        data-prompt-id="email"
+                    >
+
+                        <h3>📧 Fix My Email</h3>
+
+                        <p class="prompt-text">
+                            Rewrite this message so it sounds warm,
+                            clear, and direct. Keep my meaning,
+                            remove unnecessary words, and do not make
+                            me sound overly formal: [paste message]
+                        </p>
+
+                        <div class="prompt-actions">
+
+                            <button
+                                class="small-button copy-prompt"
+                                type="button"
+                            >
+                                Copy prompt
+                            </button>
+
+                            <button
+                                class="small-button favorite-prompt"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                ☆ Favorite
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    <article
+                        class="card green searchable prompt-card"
+                        data-prompt-id="todo"
+                    >
+
+                        <h3>
+                            ✅ Fix My Chaotic To-Do List
+                        </h3>
+
+                        <p class="prompt-text">
+                            Organize this messy list into:
+                            must do today, should do this week,
+                            can wait, and delegate if possible.
+                            Be realistic about how much one human
+                            can do in one day: [paste list]
+                        </p>
+
+                        <div class="prompt-actions">
+
+                            <button
+                                class="small-button copy-prompt"
+                                type="button"
+                            >
+                                Copy prompt
+                            </button>
+
+                            <button
+                                class="small-button favorite-prompt"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                ☆ Favorite
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    <article
+                        class="card yellow searchable prompt-card"
+                        data-prompt-id="kid"
+                    >
+
+                        <h3>🧒 Explain It to My Kid</h3>
+
+                        <p class="prompt-text">
+                            Explain [topic] to a child who is [age].
+                            Use simple words, one everyday example,
+                            and a short fun quiz at the end.
+                            Do not assume facts I have not provided.
+                        </p>
+
+                        <div class="prompt-actions">
+
+                            <button
+                                class="small-button copy-prompt"
+                                type="button"
+                            >
+                                Copy prompt
+                            </button>
+
+                            <button
+                                class="small-button favorite-prompt"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                ☆ Favorite
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    <article
+                        class="card purple searchable prompt-card"
+                        data-prompt-id="factcheck"
+                    >
+
+                        <h3>
+                            🔍 Make AI Check Itself
+                        </h3>
+
+                        <p class="prompt-text">
+                            Review your previous answer.
+                            Separate what is confirmed fact from what
+                            is inference or uncertainty.
+                            Identify anything I should independently
+                            verify and tell me what type of reliable
+                            source would be best.
+                        </p>
+
+                        <div class="prompt-actions">
+
+                            <button
+                                class="small-button copy-prompt"
+                                type="button"
+                            >
+                                Copy prompt
+                            </button>
+
+                            <button
+                                class="small-button favorite-prompt"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                ☆ Favorite
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    <article
+                        class="card pink searchable prompt-card"
+                        data-prompt-id="event"
+                    >
+
+                        <h3>🎈 Plan the Thing</h3>
+
+                        <p class="prompt-text">
+                            Help me plan a [birthday/party/event]
+                            for [number] people.
+                            My budget is about [$].
+                            Create a simple timeline, food ideas,
+                            supply list, and the things I am most
+                            likely to forget.
+                        </p>
+
+                        <div class="prompt-actions">
+
+                            <button
+                                class="small-button copy-prompt"
+                                type="button"
+                            >
+                                Copy prompt
+                            </button>
+
+                            <button
+                                class="small-button favorite-prompt"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                ☆ Favorite
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <p
+                    id="copyStatus"
+                    class="save-status"
+                    aria-live="polite"
+                ></p>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             AI SAFETY
+             ===================================================== -->
+
+        <section
+            id="safety"
+            aria-labelledby="safetyHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="safetyHeading">
+                        Keep the Humans Safe
+                    </h2>
+
+                    <p>
+                        Useful caution without treating AI like either
+                        a superhero or the beginning of the robot apocalypse.
+                    </p>
+
+                </div>
+
+                <div class="grid">
+
+                    <article class="card green searchable">
+
+                        <h3>👧 Kids + AI</h3>
+
+                        <p>
+                            Teach kids that AI is a tool,
+                            not a person, teacher, doctor,
+                            best friend, or guaranteed source of truth.
+                            Use age-appropriate supervision and family rules.
+                        </p>
+
+                    </article>
+
+                    <article class="card blue searchable">
+
+                        <h3>🔐 Privacy</h3>
+
+                        <p>
+                            Avoid casually pasting passwords,
+                            account numbers, sensitive medical information,
+                            school records, private work documents,
+                            or other people's confidential details.
+                        </p>
+
+                    </article>
+
+                    <article class="card pink searchable">
+
+                        <h3>🎭 Deepfakes</h3>
+
+                        <p>
+                            Images, video, and voices can be manipulated.
+                            If something shocking arrives by text,
+                            email, or social media, verify it through
+                            another trusted channel before reacting.
+                        </p>
+
+                    </article>
+
+                    <article class="card yellow searchable">
+
+                        <h3>💸 Scams</h3>
+
+                        <p>
+                            AI can make scam messages more convincing.
+                            Slow down when a message creates urgency,
+                            demands money, asks for codes,
+                            or claims a loved one is in immediate trouble.
+                        </p>
+
+                    </article>
+
+                    <article class="card purple searchable">
+
+                        <h3>🧾 Accuracy</h3>
+
+                        <p>
+                            For important decisions,
+                            ask for sources and then inspect
+                            the actual sources yourself.
+                            A made-up citation is still made up.
+                        </p>
+
+                    </article>
+
+                    <article class="card blue searchable">
+
+                        <h3>🚨 The Mom Rule</h3>
+
+                        <p>
+                            If an AI answer would cause you to spend
+                            serious money, change medication,
+                            sign something, accuse someone, or panic:
+                            stop and verify with a qualified human.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             AI FAILS
+             ===================================================== -->
+
+        <section
+            id="fails"
+            aria-labelledby="failsHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="failsHeading">
+                        Things AI Got Wrong
+                    </h2>
+
+                    <p>
+                        Because failure is not an embarrassing side quest.
+                        It is basically the syllabus.
+                    </p>
+
+                </div>
+
+                <div class="grid">
+
+                    <article class="card pink searchable">
+
+                        <h3>
+                            🤥 The Confident Hallucination
+                        </h3>
+
+                        <p>
+                            AI gives you an answer with the confidence
+                            of a person who has never once considered
+                            being incorrect.
+                        </p>
+
+                        <p>
+                            <strong>Lesson:</strong>
+                            Confidence ≠ accuracy.
+                        </p>
+
+                    </article>
+
+                    <article class="card yellow searchable">
+
+                        <h3>📚 The Imaginary Source</h3>
+
+                        <p>
+                            AI cites an article, case, study,
+                            or website that sounds extremely official
+                            and may not actually exist.
+                        </p>
+
+                        <p>
+                            <strong>Lesson:</strong>
+                            Open the source.
+                        </p>
+
+                    </article>
+
+                    <article class="card green searchable">
+
+                        <h3>🌀 The Helpful Overkill</h3>
+
+                        <p>
+                            You ask for three dinner ideas and receive
+                            a 42-step strategic transformation plan
+                            for Tuesday.
+                        </p>
+
+                        <p>
+                            <strong>Lesson:</strong>
+                            Specify length and format.
+                        </p>
+
+                    </article>
+
+                </div>
+
+                <div
+                    class="quote-box"
+                    style="margin-top: 1rem;"
+                >
+                    AI Fail Philosophy:
+
+                    <strong>
+                        If the answer makes you say,
+                        “That cannot possibly be right,”
+                        congratulations.
+                        Your human brain is still employed.
+                    </strong>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             AI WORDS
+             ===================================================== -->
+
+        <section
+            id="terms"
+            aria-labelledby="termsHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="termsHeading">
+                        AI Words for Normal People
+                    </h2>
+
+                    <p>
+                        No vocabulary quiz.
+                        No computer-science hazing ritual.
+                    </p>
+
+                </div>
+
+                <div class="searchable">
+
+                    <details>
+
+                        <summary>Prompt</summary>
+
+                        <p>
+                            The instructions or question you give
+                            an AI system.
+                            Basically: what you type into the box.
+                        </p>
+
+                    </details>
+
+                    <details>
+
+                        <summary>Hallucination</summary>
+
+                        <p>
+                            When AI generates false or invented information
+                            as though it were true.
+                            Yes, the technical term sounds dramatic.
+                            The behavior sometimes is too.
+                        </p>
+
+                    </details>
+
+                    <details>
+
+                        <summary>Chatbot</summary>
+
+                        <p>
+                            Software designed to respond conversationally
+                            to what you type or say.
+                        </p>
+
+                    </details>
+
+                    <details>
+
+                        <summary>Model</summary>
+
+                        <p>
+                            The underlying AI system trained to recognize
+                            patterns and generate outputs such as text,
+                            images, or audio.
+                        </p>
+
+                    </details>
+
+                    <details>
+
+                        <summary>Deepfake</summary>
+
+                        <p>
+                            Synthetic or manipulated media that can
+                            make someone appear to say or do something
+                            they did not actually say or do.
+                        </p>
+
+                    </details>
+
+                    <details>
+
+                        <summary>Generative AI</summary>
+
+                        <p>
+                            AI designed to create new content such as
+                            text, images, audio, code, or video based
+                            on patterns learned from data.
+                        </p>
+
+                    </details>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             TRY THIS TODAY
+             ===================================================== -->
+
+        <section
+            id="try-today"
+            aria-labelledby="tryHeading"
+        >
+
+            <div class="container">
+
+                <div class="challenge-box">
+
+                    <h3 id="tryHeading">
+                        🎲 Try This Today
+                    </h3>
+
+                    <p id="challengeText">
+                        Click the button and let the internet roulette
+                        wheel assign you one tiny AI experiment.
+                    </p>
+
+                    <button
+                        class="button purple"
+                        type="button"
+                        id="challengeButton"
+                    >
+                        Give me a challenge
+                    </button>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             PRIVATE THOUGHT BOX
+             ===================================================== -->
+
+        <section
+            id="thought-box"
+            aria-labelledby="thoughtHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="thoughtHeading">
+                        The “What Am I Even Doing?” Box
+                    </h2>
+
+                    <p>
+                        Type an AI question, worry, experiment,
+                        or random thought.
+                        Nothing here is sent anywhere.
+                    </p>
+
+                </div>
+
+                <div class="grid two">
+
+                    <div class="card green">
+
+                        <label for="thoughtInput">
+
+                            <strong>
+                                Your thought or question
+                            </strong>
+
+                        </label>
+
+                        <textarea
+                            id="thoughtInput"
+                            placeholder="Example: Can AI please just make the school calendar make sense?"
+                        ></textarea>
+
+                        <p class="privacy-note">
+                            🔒 This stays on this device.
+                            No server. No account.
+                            No secret robot database.
+                        </p>
+
+                        <button
+                            class="button green"
+                            id="thoughtButton"
+                            type="button"
+                        >
+                            Give me a reality check
+                        </button>
+
+                        <div
+                            id="thoughtResponse"
+                            aria-live="polite"
+                        >
+                            Your reality check will appear here.
+                        </div>
+
+                    </div>
+
+                    <div class="card pink">
+
+                        <h3>
+                            Before trusting an AI answer, ask:
+                        </h3>
+
+                        <ul>
+                            <li>
+                                Is this important enough that being wrong matters?
+                            </li>
+
+                            <li>
+                                Where did this information come from?
+                            </li>
+
+                            <li>
+                                Can I confirm it somewhere reliable?
+                            </li>
+
+                            <li>
+                                Did I give the AI enough context?
+                            </li>
+
+                            <li>
+                                Did I accidentally include private information?
+                            </li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             PRIVATE NOTES
+             ===================================================== -->
+
+        <section
+            id="notes"
+            aria-labelledby="notesHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="notesHeading">
+                        My AI Notes
+                    </h2>
+
+                    <p>
+                        What I learned, what I screwed up,
+                        what worked, and what absolutely did not.
+                    </p>
+
+                </div>
+
+                <div class="grid two">
+
+                    <article class="card blue">
+
+                        <label for="learningNotes">
+
+                            <strong>
+                                🧠 What I Learned / AI Wins
+                            </strong>
+
+                        </label>
+
+                        <textarea
+                            id="learningNotes"
+                            placeholder="Today I learned..."
+                        ></textarea>
+
+                    </article>
+
+                    <article class="card pink">
+
+                        <label for="failNotes">
+
+                            <strong>
+                                🔥 What I Screwed Up / AI Fails
+                            </strong>
+
+                        </label>
+
+                        <textarea
+                            id="failNotes"
+                            placeholder="Today the robot and I made choices..."
+                        ></textarea>
+
+                    </article>
+
+                </div>
+
+                <div class="hero-actions">
+
+                    <button
+                        class="button"
+                        id="saveNotesButton"
+                        type="button"
+                    >
+                        Save notes on this device
+                    </button>
+
+                    <button
+                        class="button secondary"
+                        id="clearNotesButton"
+                        type="button"
+                    >
+                        Clear my notes
+                    </button>
+
+                </div>
+
+                <p
+                    class="save-status"
+                    id="notesStatus"
+                    aria-live="polite"
+                ></p>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             RESOURCES
+             ===================================================== -->
+
+        <section
+            id="resources"
+            aria-labelledby="resourcesHeading"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <h2 id="resourcesHeading">
+                        AI Resources Worth Bookmarking
+                    </h2>
+
+                    <p>
+                        A small starting collection instead of
+                        900 tabs you will absolutely never read.
+                    </p>
+
+                </div>
+
+                <div class="grid">
+
+                    <article class="card blue searchable">
+
+                        <h3>OpenAI / ChatGPT</h3>
+
+                        <p>
+                            Learn about ChatGPT and OpenAI's AI tools.
+                        </p>
+
+                        <a
+                            class="resource-link"
+                            href="https://openai.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Visit OpenAI ↗
+                        </a>
+
+                    </article>
+
+                    <article class="card pink searchable">
+
+                        <h3>Google AI</h3>
+
+                        <p>
+                            Explore Google's educational material
+                            around AI concepts and responsible use.
+                        </p>
+
+                        <a
+                            class="resource-link"
+                            href="https://ai.google/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Visit Google AI ↗
+                        </a>
+
+                    </article>
+
+                    <article class="card green searchable">
+
+                        <h3>Common Sense Media</h3>
+
+                        <p>
+                            Helpful guidance for parents and families
+                            navigating technology, media, and AI.
+                        </p>
+
+                        <a
+                            class="resource-link"
+                            href="https://www.commonsensemedia.org/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Visit Common Sense Media ↗
+                        </a>
+
+                    </article>
+
+                    <article class="card yellow searchable">
+
+                        <h3>FTC Consumer Advice</h3>
+
+                        <p>
+                            Useful information about scams,
+                            impersonation, fraud,
+                            and consumer protection.
+                        </p>
+
+                        <a
+                            class="resource-link"
+                            href="https://consumer.ftc.gov/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Visit FTC Consumer Advice ↗
+                        </a>
+
+                    </article>
+
+                    <article class="card purple searchable">
+
+                        <h3>
+                            NIST Artificial Intelligence
+                        </h3>
+
+                        <p>
+                            A more serious resource for learning
+                            about AI risk, standards,
+                            trustworthiness, and responsible use.
+                        </p>
+
+                        <a
+                            class="resource-link"
+                            href="https://www.nist.gov/artificial-intelligence"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Visit NIST AI ↗
+                        </a>
+
+                    </article>
+
+                    <article class="card blue searchable">
+
+                        <h3>
+                            AI Incident Database
+                        </h3>
+
+                        <p>
+                            A collection documenting real-world
+                            incidents and problems involving AI systems.
+                        </p>
+
+                        <a
+                            class="resource-link"
+                            href="https://incidentdatabase.ai/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Explore AI incidents ↗
+                        </a>
+
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
+    <footer>
+
+        <div class="container">
+
+            <p class="footer-big">
+                Built by a busy mom, fueled by coffee,
+                curiosity, and AI mistakes. ☕🤖
+            </p>
+
+            <p>
+                Learning How to Fail at AI
+            </p>
+
+            <p>
+                The goal is not to become a robot.
+                The goal is to get some of your time back.
+            </p>
+
+        </div>
+
+    </footer>
+
+    <script>
+        // =========================================================
+        // v1.1 - PAGE ELEMENTS
+        // These variables connect JavaScript to the controls
+        // and interactive areas on the webpage.
+        // =========================================================
+
+        const body = document.body;
+
+        const darkModeButton =
+            document.getElementById("darkModeButton");
+
+        const heroImage =
+            document.getElementById("heroImage");
+
+        const imageFallback =
+            document.getElementById("imageFallback");
+
+        const siteSearch =
+            document.getElementById("siteSearch");
+
+        const clearSearchButton =
+            document.getElementById("clearSearchButton");
+
+        const searchStatus =
+            document.getElementById("searchStatus");
+
+        const challengeButton =
+            document.getElementById("challengeButton");
+
+        const challengeText =
+            document.getElementById("challengeText");
+
+        const thoughtInput =
+            document.getElementById("thoughtInput");
+
+        const thoughtButton =
+            document.getElementById("thoughtButton");
+
+        const thoughtResponse =
+            document.getElementById("thoughtResponse");
+
+        const learningNotes =
+            document.getElementById("learningNotes");
+
+        const failNotes =
+            document.getElementById("failNotes");
+
+        const saveNotesButton =
+            document.getElementById("saveNotesButton");
+
+        const clearNotesButton =
+            document.getElementById("clearNotesButton");
+
+        const notesStatus =
+            document.getElementById("notesStatus");
+
+        const copyStatus =
+            document.getElementById("copyStatus");
+
+        // =========================================================
+        // HERO IMAGE FALLBACK
+        // If busy-mom-ai.png cannot be found,
+        // the page shows a fun placeholder instead of a broken image.
+        // =========================================================
+
+        heroImage.addEventListener(
+            "error",
+            function () {
+
+                heroImage.style.display = "none";
+
+                imageFallback.style.display = "grid";
+            }
+        );
+
+        // =========================================================
+        // LOAD THE SAVED COLOR THEME
+        // If the visitor used dark mode before,
+        // the browser remembers that choice on this device.
+        // =========================================================
+
+        const savedTheme =
+            localStorage.getItem("failAtAITheme");
+
+        if (savedTheme === "dark") {
+
+            body.classList.add("dark");
+
+            darkModeButton.setAttribute(
+                "aria-pressed",
+                "true"
+            );
+
+            darkModeButton.textContent =
+                "☀️ Light";
+
+            darkModeButton.setAttribute(
+                "aria-label",
+                "Switch to light mode"
+            );
+        }
+
+        // =========================================================
+        // DARK MODE BUTTON
+        // This switches the website between light and dark mode
+        // and saves the visitor's preference locally.
+        // =========================================================
+
+        darkModeButton.addEventListener(
+            "click",
+            function () {
+
+                const darkModeIsOn =
+                    body.classList.toggle("dark");
+
+                localStorage.setItem(
+                    "failAtAITheme",
+                    darkModeIsOn
+                        ? "dark"
+                        : "light"
+                );
+
+                darkModeButton.setAttribute(
+                    "aria-pressed",
+                    darkModeIsOn
+                        ? "true"
+                        : "false"
+                );
+
+                darkModeButton.textContent =
+                    darkModeIsOn
+                        ? "☀️ Light"
+                        : "🌙 Dark";
+
+                darkModeButton.setAttribute(
+                    "aria-label",
+                    darkModeIsOn
+                        ? "Switch to light mode"
+                        : "Switch to dark mode"
+                );
+            }
+        );
+
+        // =========================================================
+        // SEARCH FUNCTION
+        // This looks through every item marked "searchable"
+        // and hides anything that does not match the visitor's search.
+        // =========================================================
+
+        function runSearch() {
+
+            const searchTerm =
+                siteSearch.value
+                    .trim()
+                    .toLowerCase();
+
+            const searchableItems =
+                document.querySelectorAll(".searchable");
+
+            let visibleCount = 0;
+
+            searchableItems.forEach(
+                function (item) {
+
+                    const itemText =
+                        item.textContent.toLowerCase();
+
+                    const matches =
+                        searchTerm === "" ||
+                        itemText.includes(searchTerm);
+
+                    item.classList.toggle(
+                        "search-hidden",
+                        !matches
+                    );
+
+                    if (matches) {
+                        visibleCount++;
+                    }
+                }
+            );
+
+            if (searchTerm === "") {
+
+                searchStatus.textContent =
+                    "Search the tips, prompts, safety advice, fails, and resources below.";
+
+            } else if (visibleCount === 0) {
+
+                searchStatus.textContent =
+                    `No matches for "${siteSearch.value}". Apparently even this website has limits.`;
+
+            } else {
+
+                searchStatus.textContent =
+                    `${visibleCount} matching item${visibleCount === 1 ? "" : "s"} found.`;
+            }
+        }
+
+        // =========================================================
+        // LIVE SEARCH
+        // Search results update while the visitor types.
+        // =========================================================
+
+        siteSearch.addEventListener(
+            "input",
+            runSearch
+        );
+
+        // =========================================================
+        // CLEAR SEARCH
+        // This resets the search box and displays all content again.
+        // =========================================================
+
+        clearSearchButton.addEventListener(
+            "click",
+            function () {
+
+                siteSearch.value = "";
+
+                runSearch();
+
+                siteSearch.focus();
+            }
+        );
+
+        // =========================================================
+        // DAILY AI CHALLENGES
+        // One of these challenges is selected randomly each time
+        // the visitor presses the challenge button.
+        // =========================================================
+
+        const challenges = [
+
+            "Ask AI to turn your current to-do list into a realistic plan for the next two hours.",
+
+            "Ask AI for three dinners using five ingredients you already have.",
+
+            "Take one badly written email draft and ask AI to make it warm, short, and clear.",
+
+            "Ask AI a question you already know the answer to. Then see how accurate it is.",
+
+            "Ask AI to explain one confusing topic twice: once for an adult and once for a five-year-old.",
+
+            "Give AI a grocery list and ask it to organize the items by grocery-store section.",
+
+            "Ask AI to identify what part of its answer is fact, inference, or uncertainty.",
+
+            "Take a long school or work notice and ask AI to turn it into a five-item checklist.",
+
+            "Ask AI to brainstorm ten ways to save 15 minutes during a normal weekday.",
+
+            "Ask AI for an answer, then challenge it with: 'What could be wrong about this?'"
+        ];
+
+        // =========================================================
+        // RANDOM CHALLENGE BUTTON
+        // This chooses one challenge from the list above.
+        // =========================================================
+
+        challengeButton.addEventListener(
+            "click",
+            function () {
+
+                const randomIndex =
+                    Math.floor(
+                        Math.random() *
+                        challenges.length
+                    );
+
+                challengeText.textContent =
+                    challenges[randomIndex];
+            }
+        );
+
+        // =========================================================
+        // LOCAL THOUGHT BOX RESPONSES
+        // These are prewritten responses.
+        // This feature does NOT contact an outside AI service.
+        // =========================================================
+
+        const thoughtResponses = [
+
+            "First question: does being wrong here actually matter? If yes, verify before you act.",
+
+            "That sounds like a great AI task if you remove private details and give the robot clear instructions.",
+
+            "Try asking AI for a first draft, not the final word. Humans still get veto power.",
+
+            "Before you trust the answer, ask: 'What are you uncertain about?'",
+
+            "This may be a perfect moment for AI to save time — but not necessarily make the decision.",
+
+            "Give it context, a goal, and limits. 'Help me' is okay. 'Help me in 5 bullets for a busy parent' is better.",
+
+            "If an AI answer makes your eyebrow go up, listen to the eyebrow.",
+
+            "Use AI for the boring part. Keep the important judgment for yourself."
+        ];
+
+        // =========================================================
+        // THOUGHT BOX BUTTON
+        // If a visitor enters something,
+        // the page gives them one random reality-check message.
+        // =========================================================
+
+        thoughtButton.addEventListener(
+            "click",
+            function () {
+
+                const thought =
+                    thoughtInput.value.trim();
+
+                if (!thought) {
+
+                    thoughtResponse.textContent =
+                        "Give me something first. Even the pretend robot needs a clue.";
+
+                    thoughtInput.focus();
+
+                    return;
+                }
+
+                const randomIndex =
+                    Math.floor(
+                        Math.random() *
+                        thoughtResponses.length
+                    );
+
+                thoughtResponse.textContent =
+                    thoughtResponses[randomIndex];
+            }
+        );
+
+        // =========================================================
+        // COPY PROMPT BUTTONS
+        // Each button copies the prompt from its own card.
+        // Nothing is sent to a server.
+        // =========================================================
+
+        document
+            .querySelectorAll(".copy-prompt")
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        async function () {
+
+                            const card =
+                                button.closest(
+                                    ".prompt-card"
+                                );
+
+                            const prompt =
+                                card
+                                    .querySelector(
+                                        ".prompt-text"
+                                    )
+                                    .textContent
+                                    .trim();
+
+                            try {
+
+                                await navigator
+                                    .clipboard
+                                    .writeText(prompt);
+
+                                copyStatus.textContent =
+                                    "Prompt copied. One less thing to retype. 🎉";
+
+                            } catch (error) {
+
+                                copyStatus.textContent =
+                                    "Your browser blocked automatic copying. Select the prompt text and copy it manually.";
+                            }
+                        }
+                    );
+                }
+            );
+
+        // =========================================================
+        // GET FAVORITE PROMPTS
+        // This reads the saved favorite prompt IDs from localStorage.
+        // =========================================================
+
+        function getSavedFavorites() {
+
+            const saved =
+                localStorage.getItem(
+                    "failAtAIFavoritePrompts"
+                );
+
+            if (!saved) {
+                return [];
+            }
+
+            try {
+
+                return JSON.parse(saved);
+
+            } catch (error) {
+
+                return [];
+            }
+        }
+
+        // =========================================================
+        // UPDATE FAVORITE BUTTONS
+        // Filled stars show which prompts are currently saved.
+        // =========================================================
+
+        function refreshFavoriteButtons() {
+
+            const favorites =
+                getSavedFavorites();
+
+            document
+                .querySelectorAll(".prompt-card")
+                .forEach(
+                    function (card) {
+
+                        const promptId =
+                            card.dataset.promptId;
+
+                        const button =
+                            card.querySelector(
+                                ".favorite-prompt"
+                            );
+
+                        const isFavorite =
+                            favorites.includes(
+                                promptId
+                            );
+
+                        button.setAttribute(
+                            "aria-pressed",
+                            isFavorite
+                                ? "true"
+                                : "false"
+                        );
+
+                        button.textContent =
+                            isFavorite
+                                ? "★ Favorited"
+                                : "☆ Favorite";
+                    }
+                );
+        }
+
+        // =========================================================
+        // FAVORITE PROMPT BUTTONS
+        // Clicking the star adds or removes that prompt from the
+        // local favorites stored on this device.
+        // =========================================================
+
+        document
+            .querySelectorAll(
+                ".favorite-prompt"
+            )
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            const card =
+                                button.closest(
+                                    ".prompt-card"
+                                );
+
+                            const promptId =
+                                card.dataset.promptId;
+
+                            let favorites =
+                                getSavedFavorites();
+
+                            if (
+                                favorites.includes(
+                                    promptId
+                                )
+                            ) {
+
+                                favorites =
+                                    favorites.filter(
+                                        function (id) {
+
+                                            return (
+                                                id !==
+                                                promptId
+                                            );
+                                        }
+                                    );
+
+                            } else {
+
+                                favorites.push(
+                                    promptId
+                                );
+                            }
+
+                            localStorage.setItem(
+                                "failAtAIFavoritePrompts",
+                                JSON.stringify(
+                                    favorites
+                                )
+                            );
+
+                            refreshFavoriteButtons();
+                        }
+                    );
+                }
+            );
+
+        // Display saved favorite prompts as soon as the page loads.
+        refreshFavoriteButtons();
+
+        // =========================================================
+        // LOAD PRIVATE NOTES
+        // Notes saved during an earlier visit are restored here.
+        // =========================================================
+
+        learningNotes.value =
+            localStorage.getItem(
+                "failAtAILearningNotes"
+            ) || "";
+
+        failNotes.value =
+            localStorage.getItem(
+                "failAtAIFailNotes"
+            ) || "";
+
+        // =========================================================
+        // SAVE PRIVATE NOTES
+        // Both note boxes are saved only in this browser.
+        // =========================================================
+
+        saveNotesButton.addEventListener(
+            "click",
+            function () {
+
+                localStorage.setItem(
+                    "failAtAILearningNotes",
+                    learningNotes.value
+                );
+
+                localStorage.setItem(
+                    "failAtAIFailNotes",
+                    failNotes.value
+                );
+
+                notesStatus.textContent =
+                    "Saved on this device. Your notes did not go wandering around the internet.";
+            }
+        );
+
+        // =========================================================
+        // CLEAR PRIVATE NOTES
+        // The visitor is asked for confirmation before saved notes
+        // are permanently removed from this browser.
+        // =========================================================
+
+        clearNotesButton.addEventListener(
+            "click",
+            function () {
+
+                const shouldClear =
+                    window.confirm(
+                        "Clear both saved note boxes from this device?"
+                    );
+
+                if (!shouldClear) {
+                    return;
+                }
+
+                learningNotes.value = "";
+                failNotes.value = "";
+
+                localStorage.removeItem(
+                    "failAtAILearningNotes"
+                );
+
+                localStorage.removeItem(
+                    "failAtAIFailNotes"
+                );
+
+                notesStatus.textContent =
+                    "Notes cleared from this device.";
+            }
+        );
+
+        // =========================================================
+        // KEYBOARD SEARCH SHORTCUT
+        // Pressing the "/" key moves focus into the search box
+        // unless the visitor is already typing in a field.
+        // =========================================================
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                const activeTag =
+                    document.activeElement
+                        .tagName
+                        .toLowerCase();
+
+                const userIsTyping =
+                    activeTag === "input" ||
+                    activeTag === "textarea";
+
+                if (
+                    event.key === "/" &&
+                    !userIsTyping
+                ) {
+
+                    event.preventDefault();
+
+                    siteSearch.focus();
+                }
+            }
+        );
+    </script>
+
+</body>
+</html>

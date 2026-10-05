@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Makes the page responsive on phones, tablets, and desktops. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Accessible Photo Slider</title>
+
+    <style>
+        /*
+         * v1.4 - Photo information moved into one JavaScript list.
+         * v1.3 - Accessible responsive slider.
+         * v1.2 - Added captions and descriptions.
+         * v1.1 - Added picture counter.
+         * v1.0 - Initial build.
+         */
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background-color: #f5f5f5;
+            color: #222;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .slider {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .slider-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: clamp(1.5rem, 4vw, 2.25rem);
+        }
+
+        .card {
+            display: none;
+            padding: 16px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        /* Makes every picture display at the same size without stretching it. */
+        .card img {
+            display: block;
+            width: 100%;
+            height: clamp(260px, 55vw, 500px);
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .caption {
+            margin: 12px 0 0;
+            text-align: center;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .slide-status {
+            margin: 10px 0 0;
+            text-align: center;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            min-width: 120px;
+            min-height: 48px;
+            padding: 12px 22px;
+            border: 2px solid #222;
+            border-radius: 8px;
+            background-color: #222;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background-color: #444;
+        }
+
+        .controls button:focus-visible {
+            outline: 4px solid #ffbf47;
+            outline-offset: 3px;
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 14px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .controls button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <section
+            class="slider"
+            id="photoSlider"
+            aria-labelledby="sliderTitle"
+            aria-roledescription="carousel"
+        >
+
+            <h1 id="sliderTitle" class="slider-title">
+                Photo Gallery
+            </h1>
+
+            <!-- JavaScript puts the current photo card here. -->
+            <div id="slides"></div>
+
+            <!-- JavaScript automatically updates this counter. -->
+            <p
+                id="slideStatus"
+                class="slide-status"
+                aria-live="polite"
+                aria-atomic="true"
+            ></p>
+
+            <nav class="controls" aria-label="Photo slider controls">
+
+                <button
+                    type="button"
+                    id="previousButton"
+                    aria-label="Show previous photo"
+                >
+                    Previous
+                </button>
+
+                <button
+                    type="button"
+                    id="nextButton"
+                    aria-label="Show next photo"
+                >
+                    Next
+                </button>
+
+            </nav>
+
+        </section>
+    </main>
+
+    <script>
+        // ============================================================
+        // v1.4 - PHOTO LIST
+        // ============================================================
+        //
+        // ALL picture information is kept here in one place.
+        //
+        // To add another picture:
+        // 1. Put the image file in the same folder as this HTML file.
+        // 2. Add ONE new entry to this list.
+        //
+        // Nothing else in this file needs to be changed.
+
+        const photos = [
+            {
+                file: "photo-1.jpg",
+                caption: "Our Caring Cameron",
+                description: "An elderly woman in green and white sitting in wheelchair infront of gardens and fountain"
+            },
+            {
+                file: "photo-2.jpg",
+                caption: "The Party Lady",
+                description: "A picture of a smiling woman in a birthday crown with balloons and lights surrounding her"
+            },
+            {
+                file: "photo-3.jpg",
+                caption: "Celebrating with Grace",
+                description: "Three adults and one kid dressed up in monsters inc clothes celebrating a birthday"
+            },
+            {
+                file: "photo-4.jpg",
+                caption: "Our Cam, the Fashionista,
+                description: "An older woman very cooridnated in pink and white sitting in a recliner with a flower pillow behind her head"
+            },
+            {
+                file: "photo-5.jpg",
+                caption: "A Smile to Warm a Thousand Hearts",
+                description: "A smiling older woman sitting in chair in red glasses, orange dress and white sweater"
+            }
+        ];
+
+
+        // Find the parts of the page that JavaScript needs to control.
+        const slider = document.getElementById("photoSlider");
+        const slidesContainer = document.getElementById("slides");
+        const slideStatus = document.getElementById("slideStatus");
+        const previousButton = document.getElementById("previousButton");
+        const nextButton = document.getElementById("nextButton");
+
+
+        // Keep track of which entry in the photos list is currently displayed.
+        let currentPhotoIndex = 0;
+
+
+        /*
+         * This function creates the photo card by reading the current
+         * file name, caption, and description from the photos list.
+         *
+         * There are no individual photo cards written in the HTML.
+         */
+        function showPhoto(index) {
+
+            // Read the selected picture's information from the central list.
+            const photo = photos[index];
+
+
+            // Create a semantic figure element to hold the picture and caption.
+            const card = document.createElement("figure");
+
+            card.className = "card active";
+
+            card.setAttribute(
+                "aria-label",
+                "Photo " + (index + 1) + " of " + photos.length
+            );
+
+
+            // Create the image element.
+            const image = document.createElement("img");
+
+
+            // Get the image file name directly from the central photos list.
+            image.src = photo.file;
+
+
+            /*
+             * Get the image description directly from the central list.
+             * This becomes the image's alternative text for screen readers.
+             */
+            image.alt = photo.description;
+
+
+            // Create the visible caption underneath the picture.
+            const caption = document.createElement("figcaption");
+
+            caption.className = "caption";
+
+
+            // Get the visible caption directly from the central photos list.
+            caption.textContent = photo.caption;
+
+
+            // Put the image inside the card.
+            card.appendChild(image);
+
+
+            // Put the caption underneath the image.
+            card.appendChild(caption);
+
+
+            /*
+             * Replace the previous card with the newly created card.
+             *
+             * Only one card exists on the page at a time because the
+             * slider only needs to display one photograph at a time.
+             */
+            slidesContainer.replaceChildren(card);
+
+
+            /*
+             * Update the small counter underneath the card.
+             *
+             * The total is calculated automatically from the number
+             * of entries in the photos list.
+             */
+            slideStatus.textContent =
+                (index + 1) + " of " + photos.length;
+        }
+
+
+        /*
+         * Move to the next entry in the photos list.
+         *
+         * The % calculation makes the slider wrap automatically,
+         * so Next on the final picture returns to the first picture.
+         */
+        function showNextPhoto() {
+
+            currentPhotoIndex =
+                (currentPhotoIndex + 1) % photos.length;
+
+            showPhoto(currentPhotoIndex);
+        }
+
+
+        /*
+         * Move to the previous entry in the photos list.
+         *
+         * Adding photos.length prevents a negative number and makes
+         * Previous on the first picture wrap to the final picture.
+         */
+        function showPreviousPhoto() {
+
+            currentPhotoIndex =
+                (currentPhotoIndex - 1 + photos.length) % photos.length;
+
+            showPhoto(currentPhotoIndex);
+        }
+
+
+        /*
+         * When the Next button is activated with a mouse, touch,
+         * Enter, or Space, move to the next picture.
+         */
+        nextButton.addEventListener("click", function () {
+            showNextPhoto();
+        });
+
+
+        /*
+         * When the Previous button is activated, move backward
+         * through the central photos list.
+         */
+        previousButton.addEventListener("click", function () {
+            showPreviousPhoto();
+        });
+
+
+        /*
+         * Allow keyboard users to navigate with the arrow keys
+         * while their focus is inside the photo slider.
+         */
+        slider.addEventListener("keydown", function (event) {
+
+            // Right Arrow moves to the next picture.
+            if (event.key === "ArrowRight") {
+                event.preventDefault();
+                showNextPhoto();
+            }
+
+
+            // Left Arrow moves to the previous picture.
+            if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                showPreviousPhoto();
+            }
+        });
+
+
+        /*
+         * Start the slider by checking that at least one picture
+         * has been entered in the central photos list.
+         */
+        if (photos.length > 0) {
+
+            // Display the first picture in the list.
+            showPhoto(currentPhotoIndex);
+
+        } else {
+
+            /*
+             * If the list is empty, display a useful message and
+             * disable controls instead of allowing the slider to break.
+             */
+            slidesContainer.textContent =
+                "No photos have been added to the gallery.";
+
+            previousButton.disabled = true;
+            nextButton.disabled = true;
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+
+<!--
+=========================================================
+RD QR CODE GENERATOR
+Version 1.2
+
+v1.0 - Initial QR code generator
+v1.1 - Added RD initials to QR code
+v1.2 - Blue branding and improved save functionality
+
+This application generates QR codes in the browser.
+=========================================================
+-->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RD QR Code Generator</title>
+
+<style>
+
+/* =====================================================
+   PAGE SETUP
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #dbeafe
+        );
+
+    color: #1f2937;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+}
+
+
+/* =====================================================
+   MAIN CARD
+===================================================== */
+
+.app {
+
+    width: 100%;
+    max-width: 650px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 32px;
+
+    box-shadow:
+        0 12px 35px
+        rgba(30, 64, 175, 0.15);
+
+    border-top: 7px solid #2563eb;
+}
+
+
+/* =====================================================
+   RD LOGO AT TOP
+===================================================== */
+
+.logo {
+
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 28px;
+    font-weight: bold;
+
+    box-shadow:
+        0 5px 15px
+        rgba(37, 99, 235, 0.25);
+}
+
+
+/* =====================================================
+   HEADINGS
+===================================================== */
+
+h1 {
+
+    margin: 0 0 10px;
+
+    text-align: center;
+
+    color: #1e40af;
+
+    font-size:
+        clamp(1.8rem, 5vw, 2.5rem);
+}
+
+
+.intro {
+
+    text-align: center;
+
+    margin: 0 0 30px;
+
+    color: #4b5563;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.form-group {
+
+    margin-bottom: 18px;
+}
+
+
+label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: bold;
+
+    color: #1e3a8a;
+}
+
+
+textarea {
+
+    width: 100%;
+
+    min-height: 130px;
+
+    padding: 14px;
+
+    font-family: inherit;
+
+    font-size: 1rem;
+
+    line-height: 1.5;
+
+    border: 2px solid #bfdbfe;
+
+    border-radius: 10px;
+
+    resize: vertical;
+
+    background: white;
+
+    color: #111827;
+}
+
+
+textarea:focus {
+
+    outline: none;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.18);
+}
+
+
+.help-text {
+
+    font-size: .9rem;
+
+    color: #6b7280;
+
+    margin-top: 8px;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.button-row {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 16px;
+}
+
+
+button {
+
+    flex: 1;
+
+    min-width: 150px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 14px 20px;
+
+    font-family: inherit;
+
+    font-size: 1rem;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        background .2s ease;
+}
+
+
+button:hover {
+
+    transform:
+        translateY(-1px);
+}
+
+
+button:focus-visible {
+
+    outline:
+        3px solid #93c5fd;
+
+    outline-offset: 3px;
+}
+
+
+/* Generate button */
+
+.generate-button {
+
+    background: #2563eb;
+
+    color: white;
+}
+
+
+.generate-button:hover {
+
+    background: #1d4ed8;
+}
+
+
+/* Clear button */
+
+.clear-button {
+
+    background: #dbeafe;
+
+    color: #1e3a8a;
+}
+
+
+.clear-button:hover {
+
+    background: #bfdbfe;
+}
+
+
+/* Save button */
+
+.save-button {
+
+    background: #1e40af;
+
+    color: white;
+}
+
+
+.save-button:hover {
+
+    background: #1e3a8a;
+}
+
+
+button:disabled {
+
+    opacity: .5;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =====================================================
+   QR RESULT AREA
+===================================================== */
+
+.result-section {
+
+    margin-top: 30px;
+
+    padding-top: 25px;
+
+    border-top:
+        1px solid #dbeafe;
+
+    text-align: center;
+}
+
+
+.result-section h2 {
+
+    margin-top: 0;
+
+    color: #1e40af;
+}
+
+
+#qrCode {
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-height: 340px;
+
+    padding: 20px;
+
+    background: white;
+
+    border:
+        2px dashed #93c5fd;
+
+    border-radius: 14px;
+
+    overflow: auto;
+}
+
+
+#qrCode canvas {
+
+    max-width: 100%;
+
+    height: auto;
+
+    border-radius: 4px;
+}
+
+
+/* =====================================================
+   STATUS MESSAGE
+===================================================== */
+
+#statusMessage {
+
+    min-height: 24px;
+
+    margin-top: 12px;
+
+    font-size: .95rem;
+}
+
+
+.success {
+
+    color: #1e40af;
+
+    font-weight: bold;
+}
+
+
+.error {
+
+    color: #b91c1c;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   PRIVACY BOX
+===================================================== */
+
+.privacy-note {
+
+    margin-top: 24px;
+
+    padding: 14px;
+
+    background: #eff6ff;
+
+    border-left:
+        4px solid #2563eb;
+
+    border-radius: 8px;
+
+    color: #475569;
+
+    font-size: .9rem;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-size: .8rem;
+
+    color: #64748b;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 520px) {
+
+    body {
+
+        padding: 12px;
+
+        align-items: flex-start;
+    }
+
+
+    .app {
+
+        padding: 22px 16px;
+
+        margin-top: 10px;
+    }
+
+
+    .button-row {
+
+        flex-direction: column;
+    }
+
+
+    button {
+
+        width: 100%;
+    }
+
+
+    #qrCode {
+
+        min-height: 300px;
+
+        padding: 10px;
+    }
+
+}
+
+
+/* =====================================================
+   ACCESSIBILITY:
+   REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    * {
+
+        transition: none !important;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<main
+    class="app"
+    aria-labelledby="pageTitle"
+>
+
+
+<!-- =================================================
+     BRANDING
+================================================== -->
+
+<header>
+
+    <div
+        class="logo"
+        aria-hidden="true"
+    >
+        RD
+    </div>
+
+
+    <h1 id="pageTitle">
+        QR Code Generator
+    </h1>
+
+
+    <p class="intro">
+
+        Enter a web address, message,
+        phone number, email address,
+        or other text to instantly
+        create your QR code.
+
+    </p>
+
+</header>
+
+
+<!-- =================================================
+     INPUT FORM
+================================================== -->
+
+<form id="qrForm">
+
+
+<div class="form-group">
+
+
+<label for="qrText">
+
+    Text or Web Address
+
+</label>
+
+
+<textarea
+    id="qrText"
+    name="qrText"
+    placeholder="Example: https://www.example.com"
+    aria-describedby="inputHelp"
+    required
+></textarea>
+
+
+<p
+    id="inputHelp"
+    class="help-text"
+>
+
+    Anything entered here will be
+    stored inside the QR code.
+
+</p>
+
+
+</div>
+
+
+<div class="button-row">
+
+
+<button
+    type="submit"
+    class="generate-button"
+>
+
+    Generate QR Code
+
+</button>
+
+
+<button
+    type="button"
+    id="clearButton"
+    class="clear-button"
+>
+
+    Clear
+
+</button>
+
+
+</div>
+
+
+</form>
+
+
+
+<!-- =================================================
+     QR RESULT
+================================================== -->
+
+<section
+    class="result-section"
+    aria-labelledby="resultTitle"
+>
+
+
+<h2 id="resultTitle">
+
+    Your QR Code
+
+</h2>
+
+
+<div
+    id="qrCode"
+    role="img"
+    aria-label="Generated QR code will appear here"
+>
+
+    Your QR code will appear here.
+
+</div>
+
+
+<div
+    id="statusMessage"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+<div class="button-row">
+
+
+<button
+    type="button"
+    id="saveButton"
+    class="save-button"
+    disabled
+>
+
+    Save QR Code as Picture
+
+</button>
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     PRIVACY NOTICE
+================================================== -->
+
+<aside
+    class="privacy-note"
+    aria-label="Privacy information"
+>
+
+<strong>Privacy:</strong>
+
+Your text and QR code are processed
+directly in your browser.
+
+The information you enter is not
+submitted to a server.
+
+</aside>
+
+
+<div class="footer">
+
+    RD QR Code Generator
+
+</div>
+
+
+</main>
+
+
+
+<!-- =================================================
+     QR CODE LIBRARY
+
+     The QR library loads from the CDN.
+
+     The text entered into the generator is NOT sent
+     to the CDN. QR generation occurs in the browser.
+================================================== -->
+
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+</script>
+
+
+
+<script>
+
+/*
+=========================================================
+RD QR CODE GENERATOR
+v1.2
+
+This JavaScript controls:
+
+1. QR generation
+2. RD center branding
+3. Saving the QR as a PNG
+4. Clearing the generator
+5. Accessibility feedback
+=========================================================
+*/
+
+
+/* =====================================================
+   FIND PAGE ELEMENTS
+
+   These variables give JavaScript easy access to
+   the important parts of the HTML page.
+===================================================== */
+
+const qrForm =
+    document.getElementById("qrForm");
+
+const qrText =
+    document.getElementById("qrText");
+
+const qrCodeContainer =
+    document.getElementById("qrCode");
+
+const saveButton =
+    document.getElementById("saveButton");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+const statusMessage =
+    document.getElementById("statusMessage");
+
+
+
+/* =====================================================
+   STATUS MESSAGE FUNCTION
+
+   This displays either a success message
+   or an error message to the user.
+===================================================== */
+
+function showStatus(
+    message,
+    type = ""
+) {
+
+    statusMessage.textContent =
+        message;
+
+    statusMessage.className =
+        type;
+}
+
+
+
+/* =====================================================
+   CLEAR QR CODE FUNCTION
+
+   Removes the existing QR code from the screen.
+===================================================== */
+
+function clearQRCode() {
+
+    qrCodeContainer.innerHTML = "";
+
+}
+
+
+
+/* =====================================================
+   GENERATE QR CODE
+
+   This function:
+
+   1. Reads the user's text.
+   2. Generates the QR code.
+   3. Copies it to a new canvas.
+   4. Adds a white center circle.
+   5. Adds the blue RD initials.
+===================================================== */
+
+function generateQRCode() {
+
+
+    /* Read the user's text. */
+
+    const text =
+        qrText.value.trim();
+
+
+
+    /* Do not create an empty QR code. */
+
+    if (!text) {
+
+        clearQRCode();
+
+        qrCodeContainer.textContent =
+            "Your QR code will appear here.";
+
+        saveButton.disabled = true;
+
+        showStatus(
+            "Please enter some text or a web address first.",
+            "error"
+        );
+
+        qrText.focus();
+
+        return;
+    }
+
+
+
+    /*
+       Make sure the QR library loaded correctly.
+    */
+
+    if (
+        typeof QRCode === "undefined"
+    ) {
+
+        showStatus(
+            "The QR code library could not be loaded. Please check your internet connection.",
+            "error"
+        );
+
+        return;
+    }
+
+
+
+    /* Remove an old QR code. */
+
+    clearQRCode();
+
+
+
+    /*
+       Create the QR code.
+
+       High error correction is used because a small
+       center section will be covered by the RD logo.
+    */
+
+    new QRCode(
+        qrCodeContainer,
+        {
+
+            text: text,
+
+            width: 300,
+
+            height: 300,
+
+            colorDark:
+                "#000000",
+
+            colorLight:
+                "#ffffff",
+
+            correctLevel:
+                QRCode.CorrectLevel.H
+
+        }
+    );
+
+
+
+    /*
+       QRCode.js creates its canvas very quickly.
+
+       The short delay makes sure that canvas is ready
+       before we add the RD branding.
+    */
+
+    setTimeout(
+        function() {
+
+
+            /*
+               Find the canvas created by QRCode.js.
+            */
+
+            const originalCanvas =
+                qrCodeContainer.querySelector(
+                    "canvas"
+                );
+
+
+            if (!originalCanvas) {
+
+                showStatus(
+                    "The QR code could not be displayed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+
+            /*
+               Create a NEW canvas.
+
+               This is important because the RD logo
+               becomes part of the actual saved image.
+            */
+
+            const brandedCanvas =
+                document.createElement(
+                    "canvas"
+                );
+
+
+            brandedCanvas.width =
+                300;
+
+            brandedCanvas.height =
+                300;
+
+
+
+            /*
+               Get the canvas drawing tools.
+            */
+
+            const ctx =
+                brandedCanvas.getContext(
+                    "2d"
+                );
+
+
+
+            /*
+               Copy the original QR code onto the
+               new canvas.
+            */
+
+            ctx.drawImage(
+                originalCanvas,
+                0,
+                0,
+                300,
+                300
+            );
+
+
+
+            /* =========================================
+               RD CENTER LOGO
+            ========================================== */
+
+
+            /*
+               The exact center of a 300 x 300
+               QR code is 150 x 150.
+            */
+
+            const centerX = 150;
+
+            const centerY = 150;
+
+
+
+            /*
+               Keep the center logo small.
+
+               A smaller logo means less of the
+               QR code is covered.
+            */
+
+            const circleRadius = 28;
+
+
+
+            /*
+               Draw a white circle behind RD.
+
+               This gives the initials a clean area
+               and makes them easy to read.
+            */
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+                centerX,
+                centerY,
+                circleRadius,
+                0,
+                Math.PI * 2
+            );
+
+
+            ctx.fillStyle =
+                "#ffffff";
+
+
+            ctx.fill();
+
+
+
+            /*
+               Draw the blue circle border.
+            */
+
+            ctx.lineWidth = 4;
+
+
+            ctx.strokeStyle =
+                "#2563eb";
+
+
+            ctx.stroke();
+
+
+
+            /*
+               Draw RD in blue.
+
+               The initials are centered horizontally
+               and vertically inside the circle.
+            */
+
+            ctx.fillStyle =
+                "#2563eb";
+
+
+            ctx.font =
+                "bold 23px Arial, Helvetica, sans-serif";
+
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.textBaseline =
+                "middle";
+
+
+            ctx.fillText(
+                "RD",
+                centerX,
+                centerY + 1
+            );
+
+
+
+            /*
+               Remove the original QR code from
+               the result box.
+            */
+
+            qrCodeContainer.innerHTML =
+                "";
+
+
+
+            /*
+               Add our finished branded QR code.
+            */
+
+            qrCodeContainer.appendChild(
+                brandedCanvas
+            );
+
+
+
+            /*
+               Update the accessibility description.
+            */
+
+            qrCodeContainer.setAttribute(
+                "aria-label",
+                "Generated QR code with RD initials in the center"
+            );
+
+
+
+            /*
+               The QR code now exists,
+               so enable the Save button.
+            */
+
+            saveButton.disabled =
+                false;
+
+
+
+            /*
+               Tell the user everything worked.
+            */
+
+            showStatus(
+                "QR code created successfully.",
+                "success"
+            );
+
+
+        },
+
+        50
+    );
+
+}
+
+
+
+/* =====================================================
+   FORM SUBMISSION
+
+   preventDefault() prevents the browser from
+   submitting anything to a server.
+
+   Instead, our JavaScript generates the QR code.
+===================================================== */
+
+qrForm.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+        generateQRCode();
+
+    }
+);
+
+
+
+/* =====================================================
+   SAVE QR CODE AS PNG
+
+   The RD logo is already drawn onto the canvas.
+
+   Therefore the saved PNG includes BOTH:
+
+   - the QR code
+   - the RD initials
+===================================================== */
+
+saveButton.addEventListener(
+    "click",
+    function() {
+
+
+        /*
+           Find the finished canvas.
+        */
+
+        const canvas =
+            qrCodeContainer.querySelector(
+                "canvas"
+            );
+
+
+        /*
+           Make sure a QR code exists.
+        */
+
+        if (!canvas) {
+
+            showStatus(
+                "Please generate a QR code before saving.",
+                "error"
+            );
+
+            return;
+        }
+
+
+
+        /*
+           Convert the canvas into PNG image data.
+        */
+
+        const imageData =
+            canvas.toDataURL(
+                "image/png"
+            );
+
+
+
+        /*
+           Create a temporary download link.
+
+           The user never sees this link.
+        */
+
+        const downloadLink =
+            document.createElement(
+                "a"
+            );
+
+
+
+        /*
+           Give the link the PNG image.
+        */
+
+        downloadLink.href =
+            imageData;
+
+
+
+        /*
+           Choose the filename that will appear
+           when the picture is downloaded.
+        */
+
+        downloadLink.download =
+            "RD-QR-Code.png";
+
+
+
+        /*
+           Temporarily add the download link
+           to the page.
+        */
+
+        document.body.appendChild(
+            downloadLink
+        );
+
+
+
+        /*
+           Trigger the browser's download.
+        */
+
+        downloadLink.click();
+
+
+
+        /*
+           Remove the temporary link.
+        */
+
+        document.body.removeChild(
+            downloadLink
+        );
+
+
+
+        /*
+           Confirm the save to the user.
+        */
+
+        showStatus(
+            "QR code saved as RD-QR-Code.png.",
+            "success"
+        );
+
+
+    }
+);
+
+
+
+/* =====================================================
+   CLEAR BUTTON
+
+   Clears:
+
+   - entered text
+   - QR code
+   - status messages
+
+   It then puts the cursor back into the text box.
+===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    function() {
+
+
+        qrText.value =
+            "";
+
+
+        clearQRCode();
+
+
+        qrCodeContainer.textContent =
+            "Your QR code will appear here.";
+
+
+        qrCodeContainer.setAttribute(
+            "aria-label",
+            "Generated QR code will appear here"
+        );
+
+
+        saveButton.disabled =
+            true;
+
+
+        showStatus("");
+
+
+        qrText.focus();
+
+
+    }
+);
+
+
+
+/* =====================================================
+   KEYBOARD SHORTCUT
+
+   Windows:
+   Ctrl + Enter
+
+   Mac:
+   Command + Enter
+
+   Either shortcut generates the QR code.
+===================================================== */
+
+qrText.addEventListener(
+    "keydown",
+    function(event) {
+
+
+        const shortcutPressed =
+
+            (
+                event.ctrlKey ||
+                event.metaKey
+            )
+
+            &&
+
+            event.key ===
+                "Enter";
+
+
+        if (
+            shortcutPressed
+        ) {
+
+            event.preventDefault();
+
+            generateQRCode();
+
+        }
+
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>

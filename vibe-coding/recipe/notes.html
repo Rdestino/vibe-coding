@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- v1.0 - Initial Bills Barn Buffalo Wings recipe notes page -->
+
+    <!-- Makes the page responsive on phones, tablets, and computers -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bills Barn Buffalo Wings - Recipe Notes</title>
+
+    <style>
+        /* Sets up the overall page and centers the notes card */
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            background: #f2f2f2;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* Creates the main notes card using the same style as the recipe page */
+        .notes-card {
+            width: 100%;
+            max-width: 760px;
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+        }
+
+        /* Styles the main notes page title */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: clamp(30px, 5vw, 46px);
+            color: #b31b24;
+        }
+
+        /* Styles the subtitle under the page heading */
+        .subtitle {
+            text-align: center;
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+            color: #444;
+        }
+
+        /* Styles section headings to match the main recipe page */
+        h2 {
+            color: #1d4f91;
+            font-size: 25px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 7px;
+        }
+
+        /* Gives paragraph text comfortable spacing and readability */
+        p {
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        /* Adds space above the notes section */
+        section {
+            margin-top: 26px;
+        }
+
+        /* Creates a highlighted box for a personal note or memory */
+        .tip {
+            margin-top: 26px;
+            padding: 16px;
+            background: #fff4d6;
+            border-left: 5px solid #f2b705;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        /* Centers the navigation link back to the main recipe */
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Styles the return link as a button while keeping it as a standard accessible link */
+        .back-link a {
+            display: inline-block;
+            background: #1d4f91;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 8px;
+        }
+
+        /* Gives keyboard users a clear visual focus indicator */
+        .back-link a:focus {
+            outline: 3px solid #f2b705;
+            outline-offset: 3px;
+        }
+
+        /* Makes the notes card more compact on phones and smaller screens */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .notes-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Main content area for recipe notes -->
+    <main class="notes-card" aria-labelledby="notes-title">
+
+        <!-- Main notes page title -->
+        <h1 id="notes-title">Bills Barn Buffalo Wings</h1>
+
+        <!-- Describes the purpose of this second page -->
+        <p class="subtitle">
+            Recipe Notes, Memories &amp; Game Day Tips
+        </p>
+
+        <!-- Provides room for several paragraphs about the recipe -->
+        <section aria-labelledby="about-heading">
+            <h2 id="about-heading">About This Recipe</h2>
+
+            <p>
+                These Bills Barn Buffalo Wings are made for game days, family gatherings,
+                and any time we want crispy wings with plenty of Buffalo flavor without
+                making them overly hot.
+            </p>
+
+            <p>
+                The key to the extra-crispy texture is drying the wings thoroughly before
+                cooking and using baking powder in the seasoning mixture. Giving the wings
+                time to rest uncovered in the refrigerator can make them even crispier.
+            </p>
+
+            <p>
+                The mild Buffalo sauce combines hot sauce, butter, honey, Worcestershire
+                sauce, and garlic powder. The result is a buttery, tangy sauce with just
+                enough heat to taste like classic Buffalo wings while still being mild
+                enough for a crowd.
+            </p>
+        </section>
+
+        <!-- Provides another area for personal notes or future recipe adjustments -->
+        <aside class="tip" aria-label="Personal recipe note">
+            <strong>Personal Note:</strong>
+            Use this space to add your own game-day memories, ingredient changes,
+            cooking experiments, favorite dipping sauces, or anything else you want
+            to remember about the recipe.
+        </aside>
+
+        <!-- Provides a link back to the main recipe page -->
+        <nav class="back-link" aria-label="Return to recipe">
+            <a href="index.html">Back to Bills Barn Buffalo Wings</a>
+        </nav>
+
+    </main>
+
+    <script>
+        // v1.0 - Initial JavaScript section for the recipe notes page.
+
+        // This notes page does not need interactive JavaScript to work.
+        // The return navigation uses a standard HTML link so it works with
+        // keyboards, screen readers, and browsers even if JavaScript is disabled.
+
+        // This message confirms in the browser's developer console
+        // that the recipe notes page loaded successfully.
+        console.log("Bills Barn Buffalo Wings notes page loaded successfully.");
+    </script>
+
+</body>
+</html>

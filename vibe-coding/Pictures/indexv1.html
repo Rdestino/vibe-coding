@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Makes the page scale properly on phones, tablets, and desktop screens. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Accessible Photo Slider</title>
+
+    <style>
+        /*
+         * v1.1 - Changed the photo counter to a small "1 of 5" format.
+         * v1.0 - Initial build.
+         */
+
+        /* Gives the whole page a simple centered layout. */
+        body {
+            margin: 0;
+            padding: 24px;
+            background-color: #f5f5f5;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+        }
+
+        /* Keeps the slider centered and prevents it from becoming too wide. */
+        .slider {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Provides a visible heading for the photo gallery. */
+        .slider-title {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: clamp(1.5rem, 4vw, 2.25rem);
+        }
+
+        /* Creates the main card area around the current photograph. */
+        .card {
+            display: none;
+            background-color: #ffffff;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Only the currently selected card is visible. */
+        .card.active {
+            display: block;
+        }
+
+        /*
+         * Gives every photograph the same visible size.
+         * object-fit: cover keeps the image proportional without stretching it.
+         */
+        .card img {
+            display: block;
+            width: 100%;
+            height: clamp(260px, 55vw, 500px);
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Displays the small picture counter directly underneath the card. */
+        .slide-status {
+            margin: 10px 0 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Places the Previous and Next buttons beside each other. */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* Styles the navigation buttons. */
+        .controls button {
+            min-width: 120px;
+            min-height: 48px;
+            padding: 12px 22px;
+            border: 2px solid #222;
+            border-radius: 8px;
+            background-color: #222;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Gives mouse users a visible hover effect. */
+        .controls button:hover {
+            background-color: #444;
+        }
+
+        /* Creates a strong focus indicator for keyboard users. */
+        .controls button:focus-visible {
+            outline: 4px solid #ffbf47;
+            outline-offset: 3px;
+        }
+
+        /* Stacks the buttons on very small screens. */
+        @media (max-width: 420px) {
+            body {
+                padding: 14px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .controls button {
+                width: 100%;
+            }
+        }
+
+        /* Respects the visitor's reduced-motion preference. */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Contains the primary content of the page. -->
+    <main>
+
+        <!-- Contains the complete accessible photo slider. -->
+        <section
+            class="slider"
+            id="photoSlider"
+            aria-labelledby="slider-title"
+            aria-roledescription="carousel"
+        >
+
+            <h1 id="slider-title" class="slider-title">
+                Photo Gallery
+            </h1>
+
+            <!-- Contains all five photo cards. -->
+            <div id="slides">
+
+                <article class="card active" aria-label="Photo 1 of 5" aria-hidden="false">
+                    <img src="photo-1.jpg" alt="Photo 1">
+                </article>
+
+                <article class="card" aria-label="Photo 2 of 5" aria-hidden="true">
+                    <img src="photo-2.jpg" alt="Photo 2">
+                </article>
+
+                <article class="card" aria-label="Photo 3 of 5" aria-hidden="true">
+                    <img src="photo-3.jpg" alt="Photo 3">
+                </article>
+
+                <article class="card" aria-label="Photo 4 of 5" aria-hidden="true">
+                    <img src="photo-4.jpg" alt="Photo 4">
+                </article>
+
+                <article class="card" aria-label="Photo 5 of 5" aria-hidden="true">
+                    <img src="photo-5.jpg" alt="Photo 5">
+                </article>
+
+            </div>
+
+            <!-- Shows the current picture number directly underneath the card. -->
+            <p
+                id="slideStatus"
+                class="slide-status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                1 of 5
+            </p>
+
+            <!-- Provides Previous and Next navigation controls. -->
+            <nav class="controls" aria-label="Photo slider controls">
+
+                <button
+                    type="button"
+                    id="previousButton"
+                    aria-label="Show previous photo"
+                >
+                    Previous
+                </button>
+
+                <button
+                    type="button"
+                    id="nextButton"
+                    aria-label="Show next photo"
+                >
+                    Next
+                </button>
+
+            </nav>
+
+        </section>
+
+    </main>
+
+    <script>
+        /*
+         * v1.1 - Counter now displays "1 of 5", "2 of 5", etc.
+         * v1.0 - Added Previous, Next, wrap-around, and keyboard navigation.
+         */
+
+
+        /*
+         * Find the slider so keyboard shortcuts only operate
+         * while the user is interacting with this photo gallery.
+         */
+        const slider = document.getElementById("photoSlider");
+
+
+        /*
+         * Find all five photo cards and store them so JavaScript
+         * can decide which card should currently be visible.
+         */
+        const cards = document.querySelectorAll(".card");
+
+
+        /*
+         * Find the Previous and Next buttons so JavaScript
+         * can respond when the visitor activates them.
+         */
+        const previousButton = document.getElementById("previousButton");
+        const nextButton = document.getElementById("nextButton");
+
+
+        /*
+         * Find the counter underneath the card so its text
+         * can be updated whenever the picture changes.
+         */
+        const slideStatus = document.getElementById("slideStatus");
+
+
+        /*
+         * Keep track of the currently displayed card.
+         * JavaScript starts counting at zero, so zero represents photo 1.
+         */
+        let currentCardIndex = 0;
+
+
+        /*
+         * This function displays the selected photo and hides
+         * all of the other photo cards.
+         *
+         * It also updates accessibility information and
+         * the small picture counter underneath the card.
+         */
+        function showCard(index) {
+
+            /*
+             * Go through every card and determine whether
+             * it is the card that should currently be visible.
+             */
+            cards.forEach(function(card, cardIndex) {
+
+                const isCurrentCard = cardIndex === index;
+
+                /*
+                 * Add the active class to the selected card
+                 * and remove it from all other cards.
+                 */
+                card.classList.toggle("active", isCurrentCard);
+
+                /*
+                 * Tell screen readers which cards are hidden
+                 * and which card is currently visible.
+                 */
+                card.setAttribute(
+                    "aria-hidden",
+                    isCurrentCard ? "false" : "true"
+                );
+            });
+
+
+            /*
+             * Update the small counter underneath the card.
+             *
+             * Adding 1 converts JavaScript's zero-based number
+             * into the normal picture numbers 1 through 5.
+             */
+            slideStatus.textContent =
+                (index + 1) + " of " + cards.length;
+        }
+
+
+        /*
+         * Move forward by one picture.
+         *
+         * The remainder operator makes the slider wrap around,
+         * so Next on picture 5 returns to picture 1.
+         */
+        function showNextCard() {
+            currentCardIndex =
+                (currentCardIndex + 1) % cards.length;
+
+            showCard(currentCardIndex);
+        }
+
+
+        /*
+         * Move backward by one picture.
+         *
+         * This calculation wraps around so Previous on
+         * picture 1 displays picture 5.
+         */
+        function showPreviousCard() {
+            currentCardIndex =
+                (currentCardIndex - 1 + cards.length) % cards.length;
+
+            showCard(currentCardIndex);
+        }
+
+
+        /*
+         * Move forward when the visitor activates the Next button.
+         */
+        nextButton.addEventListener("click", function() {
+            showNextCard();
+        });
+
+
+        /*
+         * Move backward when the visitor activates the Previous button.
+         */
+        previousButton.addEventListener("click", function() {
+            showPreviousCard();
+        });
+
+
+        /*
+         * Allow the Left and Right Arrow keys to navigate the slider
+         * when keyboard focus is inside the slider.
+         */
+        slider.addEventListener("keydown", function(event) {
+
+            /*
+             * The Right Arrow displays the next picture.
+             */
+            if (event.key === "ArrowRight") {
+                event.preventDefault();
+                showNextCard();
+            }
+
+            /*
+             * The Left Arrow displays the previous picture.
+             */
+            if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                showPreviousCard();
+            }
+        });
+
+
+        /*
+         * Initialize the slider so the first card, counter,
+         * and accessibility information all agree when the page opens.
+         */
+        showCard(currentCardIndex);
+    </script>
+
+</body>
+</html>

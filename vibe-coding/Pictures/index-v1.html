@@ -1,0 +1,669 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Makes the page responsive on phones, tablets, and desktop computers. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cameron Photo Gallery</title>
+
+    <style>
+        /*
+         * v1.7 - Added a full gallery of all photos underneath the slider.
+         * v1.6 - Added an automatic list of all captions under the slider.
+         * v1.5 - Complete five-photo slider with captions and descriptions.
+         * v1.4 - Photo information stored in one JavaScript list.
+         * v1.3 - Accessible and responsive slider.
+         * v1.2 - Added captions and descriptions.
+         * v1.1 - Added picture counter.
+         * v1.0 - Initial build.
+         */
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background-color: #f5f5f5;
+            color: #222222;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .slider {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .slider-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: clamp(1.5rem, 4vw, 2.25rem);
+        }
+
+        .card {
+            margin: 0;
+            padding: 16px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .card img {
+            display: block;
+            width: 100%;
+            height: clamp(260px, 55vw, 500px);
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .caption {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        .slide-status {
+            margin: 10px 0 0;
+            text-align: center;
+            color: #555555;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            min-width: 120px;
+            min-height: 48px;
+            padding: 12px 22px;
+            border: 2px solid #222222;
+            border-radius: 8px;
+            background-color: #222222;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background-color: #444444;
+        }
+
+        .controls button:focus-visible {
+            outline: 4px solid #ffbf47;
+            outline-offset: 3px;
+        }
+
+        .all-captions {
+            margin-top: 32px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .all-captions h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+        }
+
+        .all-captions-list {
+            margin-bottom: 0;
+            padding-left: 28px;
+            line-height: 1.6;
+        }
+
+        .all-captions-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Holds all photos underneath the slider. */
+        .full-gallery {
+            margin-top: 32px;
+        }
+
+        .full-gallery h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Creates a responsive grid for all photos. */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        /* Styles each photo in the full gallery. */
+        .gallery-item {
+            margin: 0;
+            padding: 14px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Keeps all gallery photos a consistent size. */
+        .gallery-item img {
+            display: block;
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .gallery-item figcaption {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 14px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .controls button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+
+        <section
+            class="slider"
+            id="photoSlider"
+            aria-labelledby="sliderTitle"
+            aria-roledescription="carousel"
+        >
+
+            <h1 id="sliderTitle" class="slider-title">
+                Cameron Photo Gallery
+            </h1>
+
+            <!-- JavaScript places the current slider photo here. -->
+            <div id="slides"></div>
+
+            <!-- Shows the current slider position. -->
+            <p
+                id="slideStatus"
+                class="slide-status"
+                aria-live="polite"
+                aria-atomic="true"
+            ></p>
+
+            <!-- Slider controls. -->
+            <nav class="controls" aria-label="Photo slider controls">
+
+                <button
+                    type="button"
+                    id="previousButton"
+                    aria-label="Show previous photo"
+                >
+                    Previous
+                </button>
+
+                <button
+                    type="button"
+                    id="nextButton"
+                    aria-label="Show next photo"
+                >
+                    Next
+                </button>
+
+            </nav>
+
+            <!-- Shows all captions at once. -->
+            <section
+                class="all-captions"
+                aria-labelledby="allCaptionsTitle"
+            >
+                <h2 id="allCaptionsTitle">All Captions</h2>
+
+                <ol
+                    id="allCaptionsList"
+                    class="all-captions-list"
+                ></ol>
+            </section>
+
+            <!-- Shows all five photos at once underneath the slider. -->
+            <section
+                class="full-gallery"
+                aria-labelledby="fullGalleryTitle"
+            >
+                <h2 id="fullGalleryTitle">All Photos</h2>
+
+                <div
+                    id="galleryGrid"
+                    class="gallery-grid"
+                ></div>
+            </section>
+
+        </section>
+
+    </main>
+
+    <script>
+        // ============================================================
+        // v1.7 - PHOTO LIST
+        // ============================================================
+        //
+        // All file names, captions, and accessible descriptions
+        // are stored here in one single place.
+        //
+        // To add another picture:
+        // 1. Put the image file in the same folder as this HTML file.
+        // 2. Add one new entry to this list.
+        //
+        // The slider, counter, caption list, and full photo gallery
+        // will all update automatically.
+
+        const photos = [
+            {
+                file: "photo-1.jpg",
+                caption: "Our Caring Cameron",
+                description: "An elderly woman in green and white sitting in a wheelchair in front of gardens and a fountain."
+            },
+            {
+                file: "photo-2.jpg",
+                caption: "The Party Lady",
+                description: "A smiling woman in a birthday crown with balloons and lights surrounding her."
+            },
+            {
+                file: "photo-3.jpg",
+                caption: "Celebrating with Grace",
+                description: "Three adults and one child dressed in Monsters, Inc. clothes celebrating a birthday."
+            },
+            {
+                file: "photo-4.jpg",
+                caption: "Our Cam, the Fashionista",
+                description: "An older woman coordinated in pink and white, sitting in a recliner with a flower pillow behind her head."
+            },
+            {
+                file: "phone-6.jpg",
+                caption: "You Go Girl",
+                description: "An elderly woman swinging on an accessible all-ages swing at the playground" 
+            },
+            {
+                file: "photo-5.jpg",
+                caption: "A Smile to Warm a Thousand Hearts",
+                description: "A smiling older woman sitting in a chair wearing red glasses, an orange dress, and a white sweater."
+            }
+        ];
+
+
+        /*
+         * Find the main slider section so keyboard navigation
+         * can work while the visitor is interacting with it.
+         */
+        const slider = document.getElementById("photoSlider");
+
+
+        /*
+         * Find the location where the current slider photo
+         * will be displayed.
+         */
+        const slidesContainer = document.getElementById("slides");
+
+
+        /*
+         * Find the counter that shows values like "3 of 5".
+         */
+        const slideStatus = document.getElementById("slideStatus");
+
+
+        /*
+         * Find the Previous and Next buttons.
+         */
+        const previousButton = document.getElementById("previousButton");
+        const nextButton = document.getElementById("nextButton");
+
+
+        /*
+         * Find the ordered list where all captions
+         * will be shown together.
+         */
+        const allCaptionsList =
+            document.getElementById("allCaptionsList");
+
+
+        /*
+         * Find the grid where every photo will be shown
+         * at the same time underneath the slider.
+         */
+        const galleryGrid =
+            document.getElementById("galleryGrid");
+
+
+        /*
+         * Keep track of which photo is currently displayed
+         * in the one-at-a-time slider.
+         */
+        let currentPhotoIndex = 0;
+
+
+        /*
+         * Display one selected photo in the main slider.
+         *
+         * The image file, caption, and accessible description
+         * all come directly from the central photos list.
+         */
+        function showPhoto(index) {
+
+            const photo = photos[index];
+
+
+            /*
+             * Create a semantic figure to hold the current
+             * photograph and its caption.
+             */
+            const card = document.createElement("figure");
+
+            card.className = "card";
+
+            card.setAttribute(
+                "aria-label",
+                "Photo " + (index + 1) + " of " + photos.length
+            );
+
+
+            /*
+             * Create the current image.
+             */
+            const image = document.createElement("img");
+
+
+            /*
+             * Read the file name from the central photo list.
+             */
+            image.src = photo.file;
+
+
+            /*
+             * Read the accessible image description
+             * from the central photo list.
+             */
+            image.alt = photo.description;
+
+
+            /*
+             * Create the visible caption.
+             */
+            const caption = document.createElement("figcaption");
+
+            caption.className = "caption";
+
+            caption.textContent = photo.caption;
+
+
+            /*
+             * Add the image and caption to the current card.
+             */
+            card.appendChild(image);
+            card.appendChild(caption);
+
+
+            /*
+             * Replace the previous slider card with the new one.
+             * This keeps the main slider showing one photo at a time.
+             */
+            slidesContainer.replaceChildren(card);
+
+
+            /*
+             * Update the small counter under the main slider.
+             */
+            slideStatus.textContent =
+                (index + 1) + " of " + photos.length;
+        }
+
+
+        /*
+         * Build the complete list of captions.
+         *
+         * This uses the same caption values from the central photo list,
+         * so there is no duplicate caption information to maintain.
+         */
+        function buildCaptionList() {
+
+            allCaptionsList.innerHTML = "";
+
+
+            /*
+             * Create one list item for every photo caption.
+             */
+            photos.forEach(function (photo) {
+
+                const listItem = document.createElement("li");
+
+                listItem.textContent = photo.caption;
+
+                allCaptionsList.appendChild(listItem);
+            });
+        }
+
+
+        /*
+         * Build the full gallery showing every photograph
+         * and its caption underneath the slider.
+         */
+        function buildFullGallery() {
+
+            /*
+             * Empty the gallery before creating the photo cards.
+             * This prevents duplicate photos if this function is
+             * accidentally called more than once.
+             */
+            galleryGrid.innerHTML = "";
+
+
+            /*
+             * Go through every entry in the central photos list.
+             */
+            photos.forEach(function (photo) {
+
+                /*
+                 * Create a semantic figure for this gallery item.
+                 */
+                const galleryItem =
+                    document.createElement("figure");
+
+                galleryItem.className = "gallery-item";
+
+
+                /*
+                 * Create the gallery image.
+                 */
+                const galleryImage =
+                    document.createElement("img");
+
+
+                /*
+                 * Use the exact same local image file
+                 * as the main slider.
+                 */
+                galleryImage.src = photo.file;
+
+
+                /*
+                 * Use the same accessible description
+                 * stored in the central photos list.
+                 */
+                galleryImage.alt = photo.description;
+
+
+                /*
+                 * Create the visible caption underneath the image.
+                 */
+                const galleryCaption =
+                    document.createElement("figcaption");
+
+                galleryCaption.textContent = photo.caption;
+
+
+                /*
+                 * Put the image and caption together.
+                 */
+                galleryItem.appendChild(galleryImage);
+                galleryItem.appendChild(galleryCaption);
+
+
+                /*
+                 * Add the finished item to the full gallery.
+                 */
+                galleryGrid.appendChild(galleryItem);
+            });
+        }
+
+
+        /*
+         * Move forward one picture in the main slider.
+         *
+         * The remainder operator makes the slider wrap around,
+         * so the photo after the last one is the first one.
+         */
+        function showNextPhoto() {
+
+            if (photos.length === 0) {
+                return;
+            }
+
+            currentPhotoIndex =
+                (currentPhotoIndex + 1) % photos.length;
+
+            showPhoto(currentPhotoIndex);
+        }
+
+
+        /*
+         * Move backward one picture in the main slider.
+         *
+         * The calculation also wraps around,
+         * so Previous on the first photo goes to the last photo.
+         */
+        function showPreviousPhoto() {
+
+            if (photos.length === 0) {
+                return;
+            }
+
+            currentPhotoIndex =
+                (currentPhotoIndex - 1 + photos.length) % photos.length;
+
+            showPhoto(currentPhotoIndex);
+        }
+
+
+        /*
+         * Move forward when the Next button is activated.
+         */
+        nextButton.addEventListener("click", function () {
+            showNextPhoto();
+        });
+
+
+        /*
+         * Move backward when the Previous button is activated.
+         */
+        previousButton.addEventListener("click", function () {
+            showPreviousPhoto();
+        });
+
+
+        /*
+         * Allow keyboard users to navigate the main slider
+         * with the Left and Right Arrow keys.
+         */
+        slider.addEventListener("keydown", function (event) {
+
+            /*
+             * Right Arrow moves to the next photo.
+             */
+            if (event.key === "ArrowRight") {
+                event.preventDefault();
+                showNextPhoto();
+            }
+
+
+            /*
+             * Left Arrow moves to the previous photo.
+             */
+            if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                showPreviousPhoto();
+            }
+        });
+
+
+        /*
+         * Initialize everything when the page loads.
+         */
+        if (photos.length > 0) {
+
+            /*
+             * Show the first photo in the main slider.
+             */
+            showPhoto(currentPhotoIndex);
+
+
+            /*
+             * Build the list of all captions.
+             */
+            buildCaptionList();
+
+
+            /*
+             * Build the complete gallery containing
+             * all five photographs and captions.
+             */
+            buildFullGallery();
+
+        } else {
+
+            /*
+             * Show a helpful message if the central
+             * photo list contains no images.
+             */
+            slidesContainer.textContent =
+                "No photos have been added to the gallery.";
+
+            slideStatus.textContent = "";
+
+            previousButton.disabled = true;
+            nextButton.disabled = true;
+
+            document.querySelector(".all-captions").hidden = true;
+            document.querySelector(".full-gallery").hidden = true;
+        }
+    </script>
+
+</body>
+</html>
+```
