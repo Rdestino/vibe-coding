@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<!-- v1.0 - initial build: single-file Magic 8-Ball, vanilla JS, no server calls -->
+<!-- v1.1 - added snow that falls inside the ball window when the answer appears -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Magic 8-Ball</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  /* Colour tokens. Light theme is the default; dark overrides follow. */
+  :root {
+    --page: #efeaff;
+    --ink: #1b1530;
+    --muted: #5b5378;
+    --field: #ffffff;
+    --field-border: #8a7fb5;
+    --accent: #c2185b;
+    --accent-ink: #ffffff;
+    --focus: #5b3df5;
+    --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #0e0a1c; --ink: #f1ecff; --muted: #b3a9d6;
+      --field: #1a1430; --field-border: #6e62a0; --accent: #ff4f9a;
+      --accent-ink: #1a0010; --focus: #a99bff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0e0a1c; --ink: #f1ecff; --muted: #b3a9d6;
+    --field: #1a1430; --field-border: #6e62a0; --accent: #ff4f9a;
+    --accent-ink: #1a0010; --focus: #a99bff;
+  }
+
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    height: 100%; margin: 0; background: var(--page); color: var(--ink);
+    font-family: var(--font); line-height: 1.4;
+  }
+
+  /* Page layout: everything stacked and centred */
+  main {
+    min-height: 100%; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 1.5rem; padding: 1.5rem 1rem;
+  }
+  h1 { margin: 0; font-size: clamp(1.5rem, 5vw, 2.25rem); font-weight: 800; letter-spacing: -0.02em; }
+
+  /* The ball. Size = smaller of 80% width, 55% height, or 420px. cqw units scale text with it. */
+  .ball {
+    --size: min(80vw, 55vh, 420px);
+    width: var(--size); aspect-ratio: 1; border-radius: 50%;
+    container-type: inline-size;
+    display: grid; place-items: center; position: relative;
+    background: radial-gradient(circle at 32% 26%, #4a4a5e 0%, #1a1a24 28%, #07070b 62%, #000 100%);
+    box-shadow: 0 2.5rem 3rem -1.5rem rgba(20, 10, 60, .55), inset 0 -1.5rem 3rem rgba(0,0,0,.6);
+  }
+  .ball::after {
+    content: ""; position: absolute; top: 7%; left: 16%; width: 28%; height: 16%;
+    border-radius: 50%; background: radial-gradient(ellipse, rgba(255,255,255,.35), transparent 70%);
+    transform: rotate(-30deg); pointer-events: none;
+  }
+
+  /* The round window where answers appear. position:relative lets the snow canvas sit inside it. */
+  .window {
+    position: relative;
+    width: 50%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
+    padding: 6%; text-align: center; overflow: hidden;   /* overflow hidden clips the snow to the circle */
+    background: radial-gradient(circle at 50% 40%, #2b2a8f, #0b0a3a 75%);
+    box-shadow: inset 0 0 0 .6cqw #000, inset 0 1cqw 4cqw rgba(0,0,0,.8);
+    color: #f4f1ff;
+  }
+  /* Snow canvas: fills the window, ignores clicks, and sits behind the text */
+  .snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .idle, .answer { position: relative; z-index: 1; } /* keep text above the snow */
+  .idle { font-size: 22cqw; font-weight: 800; line-height: 1; }
+  .answer {
+    font-weight: 800; line-height: 1.05; font-size: 7.5cqw; overflow-wrap: anywhere;
+    margin: 0; opacity: 0; transition: opacity .6s ease;
+  }
+  .answer.is-visible { opacity: 1; }
+  .answer.is-long { font-size: 6cqw; }
+
+  /* Shake animation while the ball is "thinking" */
+  @keyframes shake {
+    0%, 100% { transform: translate(0,0) rotate(0); }
+    15% { transform: translate(-3%, 2%) rotate(-6deg); }
+    30% { transform: translate(3%, -2%) rotate(5deg); }
+    45% { transform: translate(-2%, -3%) rotate(-4deg); }
+    60% { transform: translate(3%, 3%) rotate(6deg); }
+    80% { transform: translate(-1%, 1%) rotate(-2deg); }
+  }
+  .ball.is-shaking { animation: shake .9s ease-in-out; }
+
+  /* Question form */
+  form { width: min(100%, 32rem); display: grid; gap: .75rem; }
+  label { font-weight: 700; }
+  .row { display: flex; gap: .5rem; flex-wrap: wrap; }
+  input[type="text"] {
+    flex: 1 1 14rem; min-width: 0; font: inherit; padding: .8rem 1rem; border-radius: .75rem;
+    border: 2px solid var(--field-border); background: var(--field); color: var(--ink);
+  }
+  button {
+    flex: 0 0 auto; font: inherit; font-weight: 800; padding: .8rem 1.5rem; border-radius: .75rem;
+    border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; min-height: 2.75rem;
+  }
+  button:disabled { opacity: .6; cursor: wait; }
+  input:focus-visible, button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .hint { margin: 0; min-height: 1.4em; color: var(--muted); font-size: .95rem; }
+
+  /* Respect people who ask their device for less motion */
+  @media (prefers-reduced-motion: reduce) {
+    .ball.is-shaking { animation: none; }
+    .answer { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Magic 8-Ball</h1>
+
+  <!-- The ball. The answer lives in a polite live region so screen readers announce it. -->
+  <div class="ball" id="ball">
+    <div class="window" id="window">
+      <!-- Decorative snow layer; hidden from screen readers -->
+      <canvas class="snow" id="snow" aria-hidden="true"></canvas>
+      <span class="idle" id="idle" aria-hidden="true">8</span>
+      <p class="answer" id="answer" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Question form: Enter or the button both submit -->
+  <form id="form" novalidate>
+    <label for="question">Your question</label>
+    <div class="row">
+      <input type="text" id="question" name="question" autocomplete="off" maxlength="200"
+             placeholder="Should I text them back?" aria-describedby="hint">
+      <button type="submit" id="ask">Ask the ball</button>
+    </div>
+    <p class="hint" id="hint" role="status" aria-live="polite">Type a question, then ask.</p>
+  </form>
+</main>
+
+<script>
+  // v1.0 - initial build. Everything runs in the browser only; nothing is sent anywhere.
+  // v1.1 - added the snow effect (see the "Snow" section below).
+
+  // ---- The list of possible answers. Edit this list to add or change answers. ----
+  const ANSWERS = [
+    "Yes",
+    "Nah",
+    "Maybe",
+    "Girl keep it moving",
+    "No means No",
+    "SUS",
+    "I.Just.Can't",
+    "You are the Problem"
+  ];
+
+  // ---- Grab the page elements we need. ----
+  const form = document.getElementById("form");
+  const input = document.getElementById("question");
+  const button = document.getElementById("ask");
+  const hint = document.getElementById("hint");
+  const ball = document.getElementById("ball");
+  const windowEl = document.getElementById("window");
+  const idle = document.getElementById("idle");
+  const answerEl = document.getElementById("answer");
+  const canvas = document.getElementById("snow");
+  const ctx = canvas.getContext("2d");
+
+  // ---- Settings and state ----
+  const SHAKE_MS = 900;     // how long the ball "thinks" before answering
+  let busy = false;         // true while shaking, so asks can't overlap
+  let lastIndex = -1;       // previous answer, so we never repeat it twice in a row
+
+  // If the person wants less motion, we skip the shake, the wait, and the snow.
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  // ================= Snow (v1.1) =================
+  const SNOW_SPAWN_MS = 2800; // how long new flakes keep appearing at the top
+  const MAX_FLAKES = 70;      // most flakes on screen at once
+  let flakes = [];            // the flakes currently falling
+  let spawnUntil = 0;         // timestamp when we stop adding new flakes
+  let snowFrame = 0;          // id of the pending animation frame, so we can cancel it
+
+  // Match the canvas pixel size to the window so the snow looks sharp on any screen.
+  function sizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const w = windowEl.clientWidth;
+    const h = windowEl.clientHeight;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels, not device pixels
+  }
+
+  // Create one flake just above the top edge with a random size, speed, and sway.
+  function makeFlake(w) {
+    const size = 1.5 + Math.random() * 2.5;          // flake radius in pixels
+    return {
+      x: Math.random() * w,                          // horizontal start
+      y: -size,                                      // start just above the window
+      r: size,
+      speed: 0.6 + size * 0.35,                      // bigger flakes fall faster
+      sway: 0.2 + Math.random() * 0.6,               // how far it drifts sideways
+      phase: Math.random() * Math.PI * 2,            // where in its sway cycle it starts
+      alpha: 0.6 + Math.random() * 0.4               // slight see-through variety
+    };
+  }
+
+  // One animation frame: add flakes, move them, draw them, and stop when none are left.
+  function snowLoop(now) {
+    const w = windowEl.clientWidth;
+    const h = windowEl.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+
+    // While still in the spawn period, add a new flake about every other frame.
+    if (now < spawnUntil && flakes.length < MAX_FLAKES && Math.random() < 0.55) {
+      flakes.push(makeFlake(w));
+    }
+
+    // Move each flake down with a gentle side-to-side sway, then draw it.
+    for (const f of flakes) {
+      f.phase += 0.04;
+      f.x += Math.sin(f.phase) * f.sway;
+      f.y += f.speed;
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255," + f.alpha + ")";
+      ctx.fill();
+    }
+
+    // Drop flakes that have fallen past the bottom of the window.
+    flakes = flakes.filter(function (f) { return f.y - f.r < h; });
+
+    // Keep animating until spawning is over and every flake is gone, then clean up.
+    if (now < spawnUntil || flakes.length > 0) {
+      snowFrame = requestAnimationFrame(snowLoop);
+    } else {
+      ctx.clearRect(0, 0, w, h);
+      snowFrame = 0;
+    }
+  }
+
+  // Begin a fresh snowfall (does nothing for people who prefer reduced motion).
+  function startSnow() {
+    if (reducedMotion.matches) return;
+    cancelAnimationFrame(snowFrame);      // stop any snowfall already running
+    sizeCanvas();
+    flakes = [];
+    spawnUntil = performance.now() + SNOW_SPAWN_MS;
+    snowFrame = requestAnimationFrame(snowLoop);
+  }
+
+  // Instantly clear the snow, used when a new question is asked.
+  function stopSnow() {
+    cancelAnimationFrame(snowFrame);
+    snowFrame = 0;
+    flakes = [];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  // ================= End snow =================
+
+  // ---- Pick one random answer (never the same one twice in a row). ----
+  function pickAnswer() {
+    let i;
+    do {
+      i = Math.floor(Math.random() * ANSWERS.length);
+    } while (i === lastIndex && ANSWERS.length > 1);
+    lastIndex = i;
+    return ANSWERS[i];
+  }
+
+  // ---- Show an answer in the window and start the snow. ----
+  function showAnswer(text) {
+    idle.hidden = true;                                     // hide the starting "8"
+    answerEl.classList.remove("is-visible");                // reset the fade
+    answerEl.classList.toggle("is-long", text.length > 10); // smaller text for long phrases
+    answerEl.textContent = text;                            // also triggers the screen reader announcement
+    void answerEl.offsetWidth;                              // make the browser register the reset
+    answerEl.classList.add("is-visible");                   // fade the answer in
+    startSnow();                                            // snow falls as the answer comes up
+  }
+
+  // ---- Runs when the form is submitted (button click or Enter key). ----
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (busy) return;
+
+    const question = input.value.trim();
+
+    // Empty question: tell the person and return the cursor to the box.
+    if (question === "") {
+      hint.textContent = "Please type a question first.";
+      input.setAttribute("aria-invalid", "true");
+      input.focus();
+      return;
+    }
+
+    input.removeAttribute("aria-invalid");
+    hint.textContent = "Shaking…";
+    busy = true;
+    button.disabled = true;
+
+    // Clear the old answer and snow so the new result is clearly fresh.
+    stopSnow();
+    answerEl.classList.remove("is-visible");
+    answerEl.textContent = "";
+    idle.hidden = false;
+
+    // Start the shake (CSS disables it for reduced-motion users).
+    ball.classList.remove("is-shaking");
+    void ball.offsetWidth;
+    ball.classList.add("is-shaking");
+
+    // After the shake, reveal the answer and allow another question.
+    const wait = reducedMotion.matches ? 0 : SHAKE_MS;
+    setTimeout(function () {
+      ball.classList.remove("is-shaking");
+      showAnswer(pickAnswer());
+      hint.textContent = "Ask another question any time.";
+      busy = false;
+      button.disabled = false;
+      input.select();
+    }, wait);
+  });
+
+  // ---- Clear the error state as soon as the person types again. ----
+  input.addEventListener("input", function () {
+    if (input.hasAttribute("aria-invalid")) {
+      input.removeAttribute("aria-invalid");
+      hint.textContent = "Type a question, then ask.";
+    }
+  });
+</script>
+</body>
+</html>
