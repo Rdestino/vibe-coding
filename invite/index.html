@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bills Barn Game Day Invitation!</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Canvas Confetti Library for RSVP Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: Inter & Graduate (Varsity style typography) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Graduate&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        billsRoyal: '#00338D',
+                        billsRed: '#C60C30',
+                        billsNavy: '#001E50',
+                        billsAccent: '#E31837',
+                        billsSilver: '#A5ACAF'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        varsity: ['Graduate', 'cursive', 'sans-serif']
+                    },
+                    keyframes: {
+                        pulseSlow: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.03)' }
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' }
+                        }
+                    },
+                    animation: {
+                        pulseSlow: 'pulseSlow 3s infinite ease-in-out',
+                        shimmer: 'shimmer 2.5s infinite linear'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Stadium Field Texture & Styling */
+        body {
+            background-color: #001E50;
+            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .field-pattern {
+            background-color: #001e50;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 51, 141, 0.95), rgba(0, 30, 80, 0.98));
+            background-size: 24px 24px, 100% 100%;
+        }
+
+        .varsity-text {
+            font-family: 'Graduate', cursive, sans-serif;
+            text-shadow: 3px 3px 0px #001E50, -2px -2px 0px #C60C30;
+        }
+
+        .card-glass {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .card-glass-white {
+            background: rgba(255, 255, 255, 0.95);
+            color: #001E50;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Focus Ring Visibility for Accessibility */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid #C60C30 !important;
+            outline-offset: 3px !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #001E50;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C60C30;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00338D;
+        }
+    </style>
+</head>
+<body class="field-pattern min-h-screen flex flex-col justify-between text-slate-100 antialiased selection:bg-billsRed selection:text-white">
+
+    <!-- Version Comment Header -->
+    <!-- v1.1 - Updated location to Canandaigua, NY & 12pm Tailgate / 1pm Game & Buffalo Shout Music Synthesizer -->
+
+    <header class="w-full bg-billsNavy/90 backdrop-blur-md sticky top-0 z-40 border-b-4 border-billsRed shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-billsRed flex items-center justify-center font-varsity font-bold text-white text-xl shadow-inner border-2 border-white">
+                    BB
+                </div>
+                <div>
+                    <span class="font-varsity tracking-wider text-lg font-bold text-white block leading-tight">BILLS BARN</span>
+                    <span class="text-xs text-billsSilver tracking-widest uppercase block">Canandaigua, NY</span>
+                </div>
+            </div>
+
+            <!-- Header Sound & Quick Links -->
+            <div class="flex items-center space-x-3">
+                <button id="cheerAudioBtn" aria-label="Play Buffalo Shout Fight Song Synthesizer" class="bg-billsRed hover:bg-red-700 text-white text-xs md:text-sm font-bold py-2 px-3.5 rounded-full border border-red-400/40 transition-all flex items-center space-x-2 shadow-md active:scale-95">
+                    <i class="fa-solid fa-music text-white animate-bounce"></i>
+                    <span class="hidden sm:inline">Play Bills "Shout!" Song</span>
+                    <span class="sm:hidden">Bills Song!</span>
+                </button>
+                
+                <a href="#rsvpSection" class="bg-billsRoyal hover:bg-blue-700 text-white text-xs md:text-sm font-bold py-2 px-4 rounded-full transition-all border border-blue-400/40 shadow-md active:scale-95">
+                    RSVP
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 py-8 md:py-12 space-y-10">
+
+        <!-- Hero Card Section -->
+        <section class="card-glass rounded-3xl p-6 md:p-10 text-center relative overflow-hidden shadow-2xl border-t-4 border-t-billsRed">
+            <!-- Decorative Stadium Background Effects -->
+            <div class="absolute -top-12 -left-12 w-40 h-40 bg-billsRed/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-billsRoyal/30 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Dynamic Greeting Display -->
+            <div class="inline-block bg-billsRed/20 border border-billsRed/50 rounded-full px-4 py-1.5 mb-4 text-xs sm:text-sm font-bold text-red-200 uppercase tracking-widest">
+                <i class="fa-solid fa-football mr-1.5 text-billsRed"></i> Official Game Day Invitation
+            </div>
+
+            <!-- Dynamic Header Text inserted via JS -->
+            <h1 id="dynamicGreeting" class="text-3xl sm:text-5xl md:text-6xl font-black varsity-text tracking-normal text-white mb-3 min-h-[3rem] flex items-center justify-center">
+                You're Invited!
+            </h1>
+
+            <p class="text-xl sm:text-2xl font-bold text-blue-200 mb-6">
+                Join us for <span class="text-white border-b-2 border-billsRed pb-0.5">Bills Barn Game Day!</span>
+            </p>
+
+            <!-- Big Clear Date & Time Display Block -->
+            <div class="card-glass-white rounded-2xl p-6 my-6 shadow-2xl max-w-3xl mx-auto border-l-8 border-l-billsRed">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    
+                    <!-- Date -->
+                    <div class="flex flex-col items-center p-2">
+                        <div class="w-12 h-12 rounded-full bg-billsRoyal/10 text-billsRoyal flex items-center justify-center mb-2 text-xl">
+                            <i class="fa-solid fa-calendar-day"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</span>
+                        <span class="text-lg md:text-xl font-black text-billsNavy">Sunday, Nov 1, 2026</span>
+                    </div>
+
+                    <!-- Time -->
+                    <div class="flex flex-col items-center p-2 border-y md:border-y-0 md:border-x border-slate-200 py-4 md:py-0">
+                        <div class="w-12 h-12 rounded-full bg-billsRed/10 text-billsRed flex items-center justify-center mb-2 text-xl">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Schedule</span>
+                        <span class="text-base font-black text-billsNavy">12:00 PM • Tailgate</span>
+                        <span class="text-lg md:text-xl font-black text-billsRed">1:00 PM • Kickoff</span>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="flex flex-col items-center p-2">
+                        <div class="w-12 h-12 rounded-full bg-billsRoyal/10 text-billsRoyal flex items-center justify-center mb-2 text-xl">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Location</span>
+                        <span class="text-lg md:text-xl font-black text-billsNavy">Bills Barn</span>
+                        <span class="text-xs text-slate-600 font-bold">Canandaigua, NY</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Calendar Integration Buttons -->
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+                <a id="googleCalBtn" target="_blank" rel="noopener noreferrer" href="#" class="bg-white hover:bg-slate-100 text-billsNavy font-bold px-5 py-2.5 rounded-xl shadow transition-all flex items-center space-x-2 text-sm border border-slate-200 active:scale-95">
+                    <i class="fa-brands fa-google text-red-500"></i>
+                    <span>Add to Google Calendar</span>
+                </a>
+
+                <button id="icsCalBtn" class="bg-billsNavy hover:bg-slate-900 text-white font-bold px-5 py-2.5 rounded-xl shadow transition-all flex items-center space-x-2 text-sm border border-slate-700 active:scale-95">
+                    <i class="fa-solid fa-calendar-plus text-billsRoyal"></i>
+                    <span>Download .iCal / Outlook</span>
+                </button>
+            </div>
+        </section>
+
+        <section aria-labelledby="countdownHeading" class="card-glass rounded-2xl p-6 text-center shadow-xl">
+            <h2 id="countdownHeading" class="text-sm font-extrabold uppercase tracking-widest text-blue-300 mb-4 flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-stopwatch text-billsRed"></i>
+                <span>Countdown to Tailgate (12:00 PM)</span>
+            </h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                <div class="bg-billsNavy/80 border border-slate-700 p-4 rounded-xl shadow-inner">
+                    <span id="timerDays" class="text-3xl sm:text-4xl font-black text-white font-varsity block">00</span>
+                    <span class="text-xs uppercase text-slate-400 font-bold tracking-wider">Days</span>
+                </div>
+                <div class="bg-billsNavy/80 border border-slate-700 p-4 rounded-xl shadow-inner">
+                    <span id="timerHours" class="text-3xl sm:text-4xl font-black text-white font-varsity block">00</span>
+                    <span class="text-xs uppercase text-slate-400 font-bold tracking-wider">Hours</span>
+                </div>
+                <div class="bg-billsNavy/80 border border-slate-700 p-4 rounded-xl shadow-inner">
+                    <span id="timerMinutes" class="text-3xl sm:text-4xl font-black text-white font-varsity block">00</span>
+                    <span class="text-xs uppercase text-slate-400 font-bold tracking-wider">Minutes</span>
+                </div>
+                <div class="bg-billsNavy/80 border border-slate-700 p-4 rounded-xl shadow-inner">
+                    <span id="timerSeconds" class="text-3xl sm:text-4xl font-black text-billsRed font-varsity block">00</span>
+                    <span class="text-xs uppercase text-slate-400 font-bold tracking-wider">Seconds</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="rsvpSection" aria-labelledby="rsvpHeading" class="card-glass rounded-3xl p-6 md:p-8 shadow-2xl border-2 border-billsRoyal relative overflow-hidden">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-6">
+                    <h2 id="rsvpHeading" class="text-2xl md:text-3xl font-black text-white font-varsity">
+                        RSVP - CLAIM YOUR SPOT
+                    </h2>
+                    <p class="text-slate-300 text-sm mt-1">Let us know if you're joining the Bills Mafia tailgate in Canandaigua!</p>
+                </div>
+
+                <!-- Live Saved RSVP Status Banner (if user already responded) -->
+                <div id="rsvpStatusNotice" class="hidden mb-6 p-4 rounded-xl bg-blue-900/60 border border-blue-400 text-center">
+                    <p class="text-sm font-semibold text-blue-200">
+                        <i class="fa-solid fa-circle-check text-green-400 mr-1.5"></i>
+                        <span id="rsvpStatusText">You have already responded to this invitation.</span>
+                    </p>
+                    <button id="editRsvpBtn" class="mt-2 text-xs text-billsSilver underline hover:text-white font-bold">Change Response</button>
+                </div>
+
+                <!-- RSVP Form -->
+                <form id="rsvpForm" class="space-y-5">
+                    <div>
+                        <label for="guestName" class="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1">Your Name *</label>
+                        <input type="text" id="guestName" required placeholder="e.g., Sam Miller" class="w-full bg-billsNavy/90 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-billsRed focus:ring-1 focus:ring-billsRed transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="attendanceStatus" class="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1">Attending? *</label>
+                            <select id="attendanceStatus" required class="w-full bg-billsNavy/90 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-billsRed focus:ring-1 focus:ring-billsRed transition-all">
+                                <option value="Yes">HECK YES! Count me in!</option>
+                                <option value="Maybe">Maybe (Will confirm soon)</option>
+                                <option value="No">Can't make it (Sad Shout!)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="guestCount" class="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1">Total Guests Bringing</label>
+                            <select id="guestCount" class="w-full bg-billsNavy/90 border border-slate-600 rounded-xl px-4 py-3 text-white focus:border-slate-400 focus:ring-1 focus:ring-billsRed transition-all">
+                                <option value="1">Just Me (1)</option>
+                                <option value="2">Me + 1 Guest (2)</option>
+                                <option value="3">Me + 2 Guests (3)</option>
+                                <option value="4+">Squad (4+)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="bringingItem" class="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1">What Tailgate Snack/Drink are you bringing?</label>
+                        <input type="text" id="bringingItem" placeholder="e.g., Buffalo Chicken Dip, Beer, Wings, Chips..." class="w-full bg-billsNavy/90 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-billsRed focus:ring-1 focus:ring-billsRed transition-all">
+                    </div>
+
+                    <div>
+                        <label for="guestNote" class="block text-xs font-bold uppercase tracking-wider text-slate-200 mb-1">Shout Out / Message to Host</label>
+                        <textarea id="guestNote" rows="2" placeholder="Go Bills!..." class="w-full bg-billsNavy/90 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-billsRed focus:ring-1 focus:ring-billsRed transition-all"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitRsvpBtn" class="w-full bg-billsRed hover:bg-red-700 text-white font-varsity font-black text-lg py-4 rounded-xl shadow-lg hover:shadow-red-600/40 transition-all transform active:scale-98 flex items-center justify-center space-x-2 border border-red-400/40">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>LOCK IN MY RSVP</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Game Day Timeline/Agenda -->
+            <section aria-labelledby="scheduleHeading" class="card-glass rounded-3xl p-6 shadow-xl border-t-4 border-t-billsRoyal">
+                <h2 id="scheduleHeading" class="text-xl font-black text-white font-varsity mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-billsRoyal"></i>
+                    <span>Game Day Playbook</span>
+                </h2>
+
+                <div class="space-y-4 text-sm">
+                    <div class="flex items-start space-x-3 p-3 rounded-xl bg-billsNavy/50 border border-slate-700/60">
+                        <span class="font-varsity text-billsRed font-bold text-base w-20 shrink-0">12:00 PM</span>
+                        <div>
+                            <h3 class="font-bold text-white">Tailgate Kickoff & Grill Heating Up</h3>
+                            <p class="text-slate-300 text-xs">Wings on the grill, lawn games, cold drinks, and Shout song pre-game tunes!</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-3 rounded-xl bg-billsNavy/50 border border-slate-700/60">
+                        <span class="font-varsity text-billsRed font-bold text-base w-20 shrink-0">1:00 PM</span>
+                        <div>
+                            <h3 class="font-bold text-white">GAME KICKOFF!</h3>
+                            <p class="text-slate-300 text-xs">Main projector screening in the Barn with stadium surround sound.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-3 rounded-xl bg-billsNavy/50 border border-slate-700/60">
+                        <span class="font-varsity text-billsRed font-bold text-base w-20 shrink-0">HALFTIME</span>
+                        <div>
+                            <h3 class="font-bold text-white">Halftime Feast & Squad Photo</h3>
+                            <p class="text-slate-300 text-xs">Hot food, group photo, and friendly yard games competition in Canandaigua.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-3 rounded-xl bg-billsNavy/50 border border-slate-700/60">
+                        <span class="font-varsity text-billsRed font-bold text-base w-20 shrink-0">POST-GAME</span>
+                        <div>
+                            <h3 class="font-bold text-white">Victory Celebration</h3>
+                            <p class="text-slate-300 text-xs">Post-game highlights, barn bonfire, and singing "Shout!" together.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tailgate Guidelines & Party Info -->
+            <section aria-labelledby="infoHeading" class="card-glass rounded-3xl p-6 shadow-xl border-t-4 border-t-billsRed">
+                <h2 id="infoHeading" class="text-xl font-black text-white font-varsity mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-shirt text-billsRed"></i>
+                    <span>Tailgate Essentials</span>
+                </h2>
+
+                <ul class="space-y-3 text-sm text-slate-200">
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check-double text-billsRed mt-1"></i>
+                        <span><strong>Dress Code:</strong> Red, White, & Royal Blue gear encouraged! Wear your favorite jersey.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-utensils text-billsRed mt-1"></i>
+                        <span><strong>Food & Drink:</strong> Main grilled staples provided (burgers, dogs, wings). BYOB and snacks appreciated!</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-chair text-billsRed mt-1"></i>
+                        <span><strong>Seating:</strong> Plenty of couch seating inside the Barn, bring folding camp chairs for the tailgate yard.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-shield-halved text-billsRed mt-1"></i>
+                        <span><strong>Barn Rules:</strong> High energy only! Folding tables will be respected (unless it's a huge Touchdown!).</span>
+                    </li>
+                </ul>
+
+                <!-- Interactive Bills Cheer Button -->
+                <div class="mt-6 pt-4 border-t border-slate-700 text-center">
+                    <button id="shoutCheerBtn" class="w-full bg-gradient-to-r from-billsRoyal to-blue-700 hover:from-blue-700 hover:to-billsRoyal text-white font-black py-3 px-4 rounded-xl shadow-md transition-all border border-blue-400/30 flex items-center justify-center space-x-2 active:scale-95">
+                        <i class="fa-solid fa-compact-disc text-billsRed animate-spin"></i>
+                        <span>PLAY BILLS "SHOUT!" FIGHT SONG MUSIC</span>
+                    </button>
+                    <p id="cheerFeedback" class="text-xs text-blue-200 mt-2 h-4 font-semibold italic"></p>
+                </div>
+            </section>
+        </div>
+
+        <section aria-labelledby="mapHeading" class="card-glass rounded-3xl p-6 md:p-8 text-center shadow-xl">
+            <h2 id="mapHeading" class="text-xl font-black text-white font-varsity mb-2">
+                LOCATION & DIRECTIONS
+            </h2>
+            <p class="text-slate-300 text-sm mb-4">Bills Barn • Canandaigua, NY</p>
+
+            <div class="bg-billsNavy rounded-2xl p-4 border border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-left space-y-1">
+                    <div class="font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-compass text-billsRed"></i>
+                        <span>Navigation Address</span>
+                    </div>
+                    <p class="text-slate-300 text-xs">Bills Barn, Canandaigua, NY 14424 (Look for the Buffalo Bills flags along the driveway!)</p>
+                </div>
+
+                <a href="https://maps.google.com/?q=Canandaigua+NY" target="_blank" rel="noopener noreferrer" class="bg-billsRoyal hover:bg-blue-700 text-white font-bold text-xs md:text-sm px-5 py-3 rounded-xl transition-all shadow-md flex items-center space-x-2 border border-blue-400/30 whitespace-nowrap active:scale-95">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>Open Canandaigua in Google Maps</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="w-full bg-billsNavy border-t border-slate-800 py-6 text-center text-xs text-slate-400 space-y-2">
+        <p class="font-varsity text-slate-300 text-sm tracking-wider">BILLS BARN GAME DAY 2026 • CANANDAIGUA, NY</p>
+        <p>Private Event Invitation • Runs 100% locally in your browser.</p>
+        <p class="text-slate-500">Go Bills! Hey-Hey-Hey-Hey!</p>
+    </footer>
+
+    <!-- RSVP Success Modal Dialog (Accessible Focus Trap) -->
+    <div id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-billsNavy border-2 border-billsRed text-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative text-center space-y-4 animate-pulseSlow">
+            <div class="w-16 h-16 bg-billsRed rounded-full flex items-center justify-center mx-auto text-3xl text-white shadow-lg">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            
+            <h3 id="modalTitle" class="text-2xl font-black font-varsity text-white">YOU'RE LOCKED IN!</h3>
+            
+            <p id="modalMessage" class="text-sm text-slate-200">
+                Your RSVP has been saved locally! We can't wait to see you at the Bills Barn in Canandaigua!
+            </p>
+
+            <div class="bg-billsRoyal/40 p-3 rounded-xl border border-blue-400/30 text-xs text-blue-200">
+                <i class="fa-solid fa-bell text-billsRed mr-1"></i> Don't forget to add the tailgate (12pm) & kickoff (1pm) to your calendar!
+            </div>
+
+            <button id="closeModalBtn" class="w-full bg-billsRed hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow transition-all active:scale-95">
+                BACK TO INVITATION
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // v1.1 - Updated location to Canandaigua, NY & 12pm Tailgate / 1pm Game & Buffalo Shout Music Synthesizer
+        // Plain language detailed explanatory comments provided below.
+
+        /**
+         * Initialize application logic after DOM content is ready.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ==========================================
+            // 1. URL QUERY PARAMETER READING & GREETING
+            // ==========================================
+            /**
+             * Checks URL query parameters ?to=Sam or ?name=Sam.
+             * Greet user dynamically: "Sam, You're Invited!" or default "You're Invited!" if empty.
+             */
+            function initializeDynamicGreeting() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const rawName = urlParams.get('to') || urlParams.get('name');
+                const greetingElement = document.getElementById('dynamicGreeting');
+                const guestNameInput = document.getElementById('guestName');
+
+                if (rawName && rawName.trim() !== '') {
+                    // Sanitize input to avoid cross-site scripting vulnerabilities
+                    const cleanName = rawName.trim().replace(/[<>]/g, '');
+                    
+                    // Display: "Sam, You're Invited!"
+                    greetingElement.textContent = `${cleanName}, You're Invited!`;
+
+                    // Pre-fill user's name in the RSVP form field
+                    if (guestNameInput) {
+                        guestNameInput.value = cleanName;
+                    }
+                } else {
+                    // Default display if no name parameter is provided
+                    greetingElement.textContent = "You're Invited!";
+                }
+            }
+
+            // ==========================================
+            // 2. COUNTDOWN TIMER LOGIC (12:00 PM TAILGATE)
+            // ==========================================
+            /**
+             * Target Date: Sunday, November 1st, 2026 at 12:00:00 PM EST (Tailgate Start)
+             */
+            const eventDate = new Date('2026-11-01T12:00:00-05:00').getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = eventDate - now;
+
+                if (distance < 0) {
+                    // Event has started or passed
+                    document.getElementById('timerDays').textContent = '00';
+                    document.getElementById('timerHours').textContent = '00';
+                    document.getElementById('timerMinutes').textContent = '00';
+                    document.getElementById('timerSeconds').textContent = '00';
+                    return;
+                }
+
+                // Time calculations for days, hours, minutes, and seconds
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Format numbers with leading zeros if under 10
+                document.getElementById('timerDays').textContent = days < 10 ? '0' + days : days;
+                document.getElementById('timerHours').textContent = hours < 10 ? '0' + hours : hours;
+                document.getElementById('timerMinutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+                document.getElementById('timerSeconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+            }
+
+            // Run countdown immediately and update every 1 second
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+
+            // ==========================================
+            // 3. CALENDAR GENERATION (.ICS & GOOGLE)
+            // ==========================================
+            /**
+             * Prepares calendar links for 12:00 PM Tailgate and 1:00 PM Kickoff at Canandaigua, NY.
+             */
+            function setupCalendarLinks() {
+                const title = encodeURIComponent("Bills Barn Game Day! (Tailgate 12PM / Kickoff 1PM)");
+                const details = encodeURIComponent("Bills Barn Game Day Tailgate in Canandaigua! 12:00 PM Tailgate, 1:00 PM Game Kickoff. Wear Red, White, & Blue!");
+                const location = encodeURIComponent("Bills Barn, Canandaigua, NY 14424");
+                
+                // ISO Format dates for Google Calendar (Nov 1, 2026 12:00 PM to 5:00 PM EST)
+                const startTime = "20261101T170000Z"; // 12 PM EST = 17:00 UTC
+                const endTime = "20261101T220000Z";   // 5 PM EST = 22:00 UTC
+
+                // 1. Google Calendar URL
+                const googleCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${details}&location=${location}`;
+                const googleBtn = document.getElementById('googleCalBtn');
+                if (googleBtn) googleBtn.href = googleCalUrl;
+
+                // 2. ICS File Download Generator
+                const icsBtn = document.getElementById('icsCalBtn');
+                if (icsBtn) {
+                    icsBtn.addEventListener('click', () => {
+                        const icsData = [
+                            "BEGIN:VCALENDAR",
+                            "VERSION:2.0",
+                            "PRODID:-//Bills Barn Game Day//Canandaigua NY Invitation//EN",
+                            "BEGIN:VEVENT",
+                            "SUMMARY:Bills Barn Game Day! (12PM Tailgate / 1PM Kickoff)",
+                            "DESCRIPTION:Bills Barn Game Day Tailgate & Watch Party in Canandaigua, NY!",
+                            "LOCATION:Bills Barn, Canandaigua, NY 14424",
+                            "DTSTART:20261101T170000Z",
+                            "DTEND:20261101T220000Z",
+                            "END:VEVENT",
+                            "END:VCALENDAR"
+                        ].join("\n");
+
+                        // Create Blob & trigger browser file download
+                        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.setAttribute('download', 'Bills_Barn_Game_Day_Canandaigua.ics');
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+                }
+            }
+
+
+            // ==========================================
+            // 4. BUFFALO BILLS "SHOUT!" MUSIC SYNTHESIZER
+            // ==========================================
+            /**
+             * Synthesizes the iconic melody and brass fight song tune of the Buffalo Bills "Shout!" anthem
+             * purely in JavaScript using the Web Audio API without needing external MP3/audio files.
+             */
+            let isAudioPlaying = false;
+
+            function playBillsShoutTune() {
+                if (isAudioPlaying) return;
+
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    
+                    const ctx = new AudioContext();
+                    isAudioPlaying = true;
+
+                    // Musical Notes frequencies for the "Shout!" brass fight song refrain (in key of F / Bb)
+                    // F4 = 349.23, G4 = 392.00, A4 = 440.00, Bb4 = 466.16, C5 = 523.25, D5 = 587.33, Eb5 = 622.25, F5 = 698.46
+                    const melodySequence = [
+                        { note: 349.23, dur: 0.2, type: 'brass' }, // F4 - "You know"
+                        { note: 392.00, dur: 0.2, type: 'brass' }, // G4 - "you make"
+                        { note: 440.00, dur: 0.25, type: 'brass' }, // A4 - "me wanna"
+                        { note: 523.25, dur: 0.5, type: 'lead' },  // C5 - "SHOUT!"
+                        { note: 0, dur: 0.15, type: 'rest' },
+                        
+                        { note: 349.23, dur: 0.2, type: 'brass' }, // F4 - "Kick my"
+                        { note: 392.00, dur: 0.2, type: 'brass' }, // G4 - "heels up"
+                        { note: 440.00, dur: 0.25, type: 'brass' }, // A4 - "and"
+                        { note: 523.25, dur: 0.5, type: 'lead' },  // C5 - "SHOUT!"
+                        { note: 0, dur: 0.15, type: 'rest' },
+
+                        { note: 440.00, dur: 0.2, type: 'brass' }, // A4 - "Throw my"
+                        { note: 466.16, dur: 0.2, type: 'brass' }, // Bb4 - "hands up"
+                        { note: 523.25, dur: 0.25, type: 'brass' }, // C5 - "and"
+                        { note: 698.46, dur: 0.6, type: 'lead' },  // F5 - "SHOUT!"
+                        { note: 0, dur: 0.2, type: 'rest' },
+
+                        // Stadium Victory Fanfare Chords Finish
+                        { note: 523.25, dur: 0.2, type: 'chord' }, // C5
+                        { note: 587.33, dur: 0.2, type: 'chord' }, // D5
+                        { note: 698.46, dur: 0.8, type: 'chord' }  // F5 Final "GO BILLS!"
+                    ];
+
+                    let currentTime = ctx.currentTime + 0.05;
+
+                    melodySequence.forEach((step) => {
+                        if (step.type !== 'rest' && step.note > 0) {
+                            // Primary Brass Synth Oscillator
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+
+                            // Use sawtooth waveform for sharp, energetic stadium horn/brass timbre
+                            osc.type = step.type === 'lead' ? 'sawtooth' : 'triangle';
+                            osc.frequency.setValueAtTime(step.note, currentTime);
+
+                            // Harmonic harmony oscillator to give stadium brass thickness
+                            const harmonyOsc = ctx.createOscillator();
+                            const harmonyGain = ctx.createGain();
+                            harmonyOsc.type = 'sawtooth';
+                            harmonyOsc.frequency.setValueAtTime(step.note * 1.25, currentTime); // Major third harmony
+
+                            // Gain envelope
+                            gain.gain.setValueAtTime(0.18, currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.001, currentTime + step.dur);
+
+                            harmonyGain.gain.setValueAtTime(0.08, currentTime);
+                            harmonyGain.gain.exponentialRampToValueAtTime(0.001, currentTime + step.dur);
+
+                            osc.connect(gain);
+                            harmonyOsc.connect(harmonyGain);
+
+                            gain.connect(ctx.destination);
+                            harmonyGain.connect(ctx.destination);
+
+                            osc.start(currentTime);
+                            harmonyOsc.start(currentTime);
+
+                            osc.stop(currentTime + step.dur);
+                            harmonyOsc.stop(currentTime + step.dur);
+                        }
+                        currentTime += step.dur;
+                    });
+
+                    // Reset playing state after tune completes
+                    setTimeout(() => {
+                        isAudioPlaying = false;
+                    }, (currentTime - ctx.currentTime) * 1000);
+
+                } catch (e) {
+                    console.warn("Web Audio API warning: Browser restricted audio or not supported.", e);
+                    isAudioPlaying = false;
+                }
+            }
+
+
+            // ==========================================
+            // 5. LOCAL STORAGE RSVP SYSTEM & CONFETTI
+            // ==========================================
+            const rsvpForm = document.getElementById('rsvpForm');
+            const rsvpStatusNotice = document.getElementById('rsvpStatusNotice');
+            const rsvpStatusText = document.getElementById('rsvpStatusText');
+            const editRsvpBtn = document.getElementById('editRsvpBtn');
+            const rsvpModal = document.getElementById('rsvpModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            /**
+             * Check if user has already RSVP'd and display their saved details.
+             */
+            function checkSavedRsvp() {
+                const savedRsvp = localStorage.getItem('bills_barn_rsvp_canandaigua');
+                if (savedRsvp) {
+                    try {
+                        const data = JSON.parse(savedRsvp);
+                        rsvpStatusText.textContent = `Saved Response: ${data.name} - Attending: ${data.status} (${data.guests} Guest/s)`;
+                        rsvpStatusNotice.classList.remove('hidden');
+                        rsvpForm.classList.add('opacity-50');
+                    } catch (e) {
+                        localStorage.removeItem('bills_barn_rsvp_canandaigua');
+                    }
+                }
+            }
+
+            // Edit RSVP response handler
+            if (editRsvpBtn) {
+                editRsvpBtn.addEventListener('click', () => {
+                    rsvpStatusNotice.classList.add('hidden');
+                    rsvpForm.classList.remove('opacity-50');
+                });
+            }
+
+            // RSVP form submission logic
+            if (rsvpForm) {
+                rsvpForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    const guestName = document.getElementById('guestName').value.trim();
+                    const attendanceStatus = document.getElementById('attendanceStatus').value;
+                    const guestCount = document.getElementById('guestCount').value;
+                    const bringingItem = document.getElementById('bringingItem').value.trim();
+                    const guestNote = document.getElementById('guestNote').value.trim();
+
+                    const rsvpData = {
+                        name: guestName,
+                        status: attendanceStatus,
+                        guests: guestCount,
+                        bringing: bringingItem,
+                        note: guestNote,
+                        location: "Canandaigua, NY",
+                        timestamp: new Date().toISOString()
+                    };
+
+                    // Save locally in user's browser
+                    localStorage.setItem('bills_barn_rsvp_canandaigua', JSON.stringify(rsvpData));
+
+                    // Update UI status banner
+                    checkSavedRsvp();
+
+                    // Play Bills fight song synthesizer
+                    playBillsShoutTune();
+
+                    // Launch confetti blast in Bills team colors
+                    if (typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 140,
+                            spread: 90,
+                            origin: { y: 0.6 },
+                            colors: ['#00338D', '#C60C30', '#FFFFFF', '#001E50']
+                        });
+                    }
+
+                    // Open response feedback modal
+                    if (rsvpModal) {
+                        document.getElementById('modalMessage').textContent = 
+                            `Thanks ${guestName}! Your response (${attendanceStatus}) is locked in for Canandaigua, NY! Tailgate starts at 12:00 PM!`;
+                        rsvpModal.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Close modal button
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', () => {
+                    rsvpModal.classList.add('hidden');
+                });
+            }
+
+
+            // ==========================================
+            // 6. INTERACTIVE CHEER & MUSIC BUTTONS
+            // ==========================================
+            const cheerAudioBtn = document.getElementById('cheerAudioBtn');
+            const shoutCheerBtn = document.getElementById('shoutCheerBtn');
+            const cheerFeedback = document.getElementById('cheerFeedback');
+
+            const shoutLyrics = [
+                "♪ Well... You know you make me wanna (SHOUT!) ♪",
+                "♪ Kick my heels up and (SHOUT!) ♪",
+                "♪ Throw my hands up and (SHOUT!) ♪",
+                "♪ Throw my head back and (SHOUT!) ♪",
+                "♪ Come on now! GO BILLS! ♪"
+            ];
+            let lyricIndex = 0;
+
+            function triggerCheerAction() {
+                playBillsShoutTune();
+                
+                // Confetti blast
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 50,
+                        angle: Math.random() * 60 + 60,
+                        spread: 60,
+                        origin: { y: 0.8 },
+                        colors: ['#00338D', '#C60C30', '#FFFFFF']
+                    });
+                }
+
+                // Cycle lyrics text
+                if (cheerFeedback) {
+                    cheerFeedback.textContent = shoutLyrics[lyricIndex];
