@@ -1,0 +1,941 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Group Sign-Up</title>
+
+  <style>
+    /* v1.0 - Accessible, responsive sign-up form */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 14px;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background: #f0f4ff;
+      color: #20233b;
+    }
+
+    main {
+      max-width: 720px;
+      margin: auto;
+      padding: 30px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 5px 25px #20233b20;
+    }
+
+    h1 {
+      color: #44238a;
+      margin-top: 0;
+    }
+
+    h2 {
+      color: #44238a;
+    }
+
+    .intro {
+      font-size: 1.05rem;
+    }
+
+    .required-note {
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
+
+    .required-mark {
+      color: #a11942;
+      font-weight: bold;
+    }
+
+    .field {
+      margin-bottom: 24px;
+    }
+
+    label,
+    legend {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font: inherit;
+      border: 2px solid #62677c;
+      border-radius: 8px;
+      background: white;
+      color: #20233b;
+    }
+
+    fieldset {
+      border: 2px solid #a7a0ca;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 0 0 24px;
+    }
+
+    fieldset legend {
+      padding: 0 7px;
+    }
+
+    .choice {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .choice input {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 4px;
+      accent-color: #542a9c;
+    }
+
+    .choice label {
+      font-weight: normal;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      background: #542a9c;
+      color: white;
+      border: 2px solid transparent;
+      border-radius: 9px;
+      padding: 13px 22px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px 8px 5px 0;
+    }
+
+    button:hover {
+      background: #361775;
+    }
+
+    button.secondary {
+      background: #08694b;
+    }
+
+    button.secondary:hover {
+      background: #064d37;
+    }
+
+    :focus-visible {
+      outline: 4px solid #ed8a00;
+      outline-offset: 4px;
+    }
+
+    [aria-invalid="true"] {
+      border-color: #b00035 !important;
+      outline: 2px solid #b00035;
+    }
+
+    .error {
+      color: #a00030;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .error-summary {
+      border: 3px solid #b00035;
+      background: #fff0f3;
+      padding: 16px;
+      border-radius: 9px;
+      margin-bottom: 24px;
+    }
+
+    .error-summary:focus {
+      outline: 4px solid #ed8a00;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 20px;
+      background: #eaf8f0;
+      border: 2px solid #08734f;
+      border-radius: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .result a {
+      color: #064b8a;
+      text-decoration: underline;
+    }
+
+    .result a:focus-visible {
+      outline: 3px solid #ed8a00;
+    }
+
+    .small {
+      font-size: 0.92rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 20px;
+      }
+
+      button {
+        width: 100%;
+        margin: 6px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<main>
+  <header>
+    <h1>Study Group Sign-Up</h1>
+    <p class="intro">
+      Join our study group! Choose your session, tell us
+      what you can bring, and create a link to share
+      with the organizer.
+    </p>
+    <p class="required-note">
+      Fields marked
+      <span class="required-mark">*</span>
+      are required.
+    </p>
+  </header>
+
+  <!--
+    The error summary is announced to screen readers.
+    JavaScript fills it with readable error messages.
+  -->
+  <div id="errorSummary"
+       class="error-summary hidden"
+       role="alert"
+       aria-live="assertive"
+       tabindex="-1"></div>
+
+  <form id="signupForm" novalidate>
+
+    <!-- Name field -->
+    <div class="field">
+      <label for="fullName">
+        Full Name
+        <span class="required-mark">*</span>
+        (required)
+      </label>
+      <input
+        type="text"
+        id="fullName"
+        name="fullName"
+        autocomplete="name"
+        required
+        aria-describedby="nameError">
+      <div id="nameError" class="error"></div>
+    </div>
+
+    <!-- Email field -->
+    <div class="field">
+      <label for="email">
+        Email Address
+        <span class="required-mark">*</span>
+        (required)
+      </label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        autocomplete="email"
+        required
+        aria-describedby="emailError">
+      <div id="emailError" class="error"></div>
+    </div>
+
+    <!-- Date field -->
+    <div class="field">
+      <label for="date">
+        Preferred Date
+        <span class="required-mark">*</span>
+        (required)
+      </label>
+      <input
+        type="date"
+        id="date"
+        name="date"
+        required
+        aria-describedby="dateError">
+      <div id="dateError" class="error"></div>
+    </div>
+
+    <!-- Three radio buttons: select one session -->
+    <fieldset id="sessionGroup"
+              aria-describedby="sessionError">
+      <legend>
+        Choose Your Session
+        <span class="required-mark">*</span>
+        (required)
+      </legend>
+
+      <div class="choice">
+        <input type="radio"
+               id="morning"
+               name="session"
+               value="Morning - 9:00 AM">
+        <label for="morning">
+          Morning - 9:00 AM
+        </label>
+      </div>
+
+      <div class="choice">
+        <input type="radio"
+               id="afternoon"
+               name="session"
+               value="Afternoon - 1:00 PM">
+        <label for="afternoon">
+          Afternoon - 1:00 PM
+        </label>
+      </div>
+
+      <div class="choice">
+        <input type="radio"
+               id="evening"
+               name="session"
+               value="Evening - 6:00 PM">
+        <label for="evening">
+          Evening - 6:00 PM
+        </label>
+      </div>
+
+      <div id="sessionError" class="error"></div>
+    </fieldset>
+
+    <!-- Checkboxes: multiple selections allowed -->
+    <fieldset>
+      <legend>What Can You Bring? (optional)</legend>
+
+      <div class="choice">
+        <input type="checkbox"
+               id="snacks"
+               name="bring"
+               value="Snacks">
+        <label for="snacks">Snacks</label>
+      </div>
+
+      <div class="choice">
+        <input type="checkbox"
+               id="drinks"
+               name="bring"
+               value="Drinks">
+        <label for="drinks">Drinks</label>
+      </div>
+
+      <div class="choice">
+        <input type="checkbox"
+               id="supplies"
+               name="bring"
+               value="Study Supplies">
+        <label for="supplies">Study Supplies</label>
+      </div>
+
+      <div class="choice">
+        <input type="checkbox"
+               id="nothing"
+               name="bring"
+               value="Nothing">
+        <label for="nothing">
+          Nothing - just myself!
+        </label>
+      </div>
+    </fieldset>
+
+    <!-- Dropdown selection -->
+    <div class="field">
+      <label for="role">
+        How Will You Participate?
+        <span class="required-mark">*</span>
+        (required)
+      </label>
+
+      <select id="role"
+              name="role"
+              required
+              aria-describedby="roleError">
+        <option value="">-- Select an option --</option>
+        <option value="Student">Student</option>
+        <option value="Group Leader">Group Leader</option>
+        <option value="Volunteer">Volunteer</option>
+        <option value="Guest">Guest</option>
+      </select>
+
+      <div id="roleError" class="error"></div>
+    </div>
+
+    <!-- Optional notes -->
+    <div class="field">
+      <label for="notes">
+        Additional Notes (optional)
+      </label>
+
+      <textarea
+        id="notes"
+        name="notes"
+        maxlength="500"
+        placeholder="Anything the organizer should know?"></textarea>
+      <p class="small">
+        Maximum 500 characters.
+      </p>
+    </div>
+
+    <!-- Submit and reset controls -->
+    <button type="submit">
+      Create My Sign-Up Link
+    </button>
+
+    <button type="reset" class="secondary">
+      Clear Form
+    </button>
+  </form>
+
+  <!-- Generated link appears here -->
+  <section id="result"
+           class="result hidden"
+           aria-labelledby="resultHeading">
+
+    <h2 id="resultHeading" tabindex="-1">
+      Your Sign-Up Link Is Ready!
+    </h2>
+
+    <p>
+      Copy this link and send it to your organizer.
+      When opened, it will fill in your answers.
+    </p>
+
+    <p>
+      <a id="shareLink"
+         href="#"
+         target="_blank"
+         rel="noopener noreferrer">
+        Open your completed sign-up
+      </a>
+    </p>
+
+    <button type="button"
+            id="copyButton"
+            class="secondary">
+      Copy Link
+    </button>
+
+    <p id="copyStatus"
+       role="status"
+       aria-live="polite"></p>
+
+    <p class="small">
+      Important: This does not submit information to
+      a database. You must send the link to your organizer.
+      Anyone with the link can read the answers, including
+      your name and email.
+    </p>
+  </section>
+</main>
+
+<script>
+  // ==================================================
+  // v1.0 - Accessible Study Group Sign-Up Form
+  // Everything works locally inside the browser.
+  // No database, account, or server submission.
+  // ==================================================
+
+  // Find the form and other important page elements.
+  // We save references so the code can use them later.
+  const form = document.getElementById("signupForm");
+  const errorSummary =
+    document.getElementById("errorSummary");
+  const result = document.getElementById("result");
+  const resultHeading =
+    document.getElementById("resultHeading");
+  const shareLink =
+    document.getElementById("shareLink");
+  const copyButton =
+    document.getElementById("copyButton");
+  const copyStatus =
+    document.getElementById("copyStatus");
+
+  // Keep track of the most recently created link.
+  let generatedLink = "";
+
+  // These are the names of all the possible items
+  // a participant may select in the checkbox group.
+  const bringOptions = [
+    "Snacks",
+    "Drinks",
+    "Study Supplies",
+    "Nothing"
+  ];
+
+  // These are the allowed session choices.
+  const sessionOptions = [
+    "Morning - 9:00 AM",
+    "Afternoon - 1:00 PM",
+    "Evening - 6:00 PM"
+  ];
+
+  // These are the allowed participation roles.
+  const roleOptions = [
+    "Student",
+    "Group Leader",
+    "Volunteer",
+    "Guest"
+  ];
+
+  // This function displays a readable error message
+  // beside a field and marks the field as invalid.
+  function showError(fieldId, errorId, message) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(errorId);
+
+    error.textContent = message;
+    field.setAttribute("aria-invalid", "true");
+  }
+
+  // This function clears all previous validation errors.
+  // It also removes invalid markers from the fields.
+  function clearErrors() {
+    document.querySelectorAll(".error").forEach(
+      function(element) {
+        element.textContent = "";
+      }
+    );
+
+    document.querySelectorAll(
+      '[aria-invalid="true"]'
+    ).forEach(function(element) {
+      element.removeAttribute("aria-invalid");
+    });
+
+    errorSummary.textContent = "";
+    errorSummary.classList.add("hidden");
+  }
+
+  // This function reads the currently selected
+  // radio button, returning an empty string if
+  // the participant has not chosen a session.
+  function getSelectedSession() {
+    const selected = form.querySelector(
+      'input[name="session"]:checked'
+    );
+
+    return selected ? selected.value : "";
+  }
+
+  // This function gathers all checked items.
+  // Multiple checkbox values can be saved together.
+  function getSelectedItems() {
+    return Array.from(
+      form.querySelectorAll(
+        'input[name="bring"]:checked'
+      )
+    ).map(function(checkbox) {
+      return checkbox.value;
+    });
+  }
+
+  // This function collects the completed answers
+  // into one JavaScript object.
+  function collectAnswers() {
+    return {
+      name: document.getElementById(
+        "fullName"
+      ).value.trim(),
+
+      email: document.getElementById(
+        "email"
+      ).value.trim(),
+
+      date: document.getElementById(
+        "date"
+      ).value,
+
+      session: getSelectedSession(),
+
+      bring: getSelectedItems(),
+
+      role: document.getElementById(
+        "role"
+      ).value,
+
+      notes: document.getElementById(
+        "notes"
+      ).value.trim()
+    };
+  }
+
+  // This function checks all required answers.
+  // It returns an array containing every error
+  // and remembers which field needs focus first.
+  function validateAnswers(data) {
+    const errors = [];
+    let firstInvalid = null;
+
+    // A small helper makes each error consistent.
+    function addError(fieldId, errorId, message) {
+      showError(fieldId, errorId, message);
+      errors.push(message);
+
+      if (!firstInvalid) {
+        firstInvalid =
+          document.getElementById(fieldId);
+      }
+    }
+
+    // Check whether the name is missing.
+    if (!data.name) {
+      addError(
+        "fullName",
+        "nameError",
+        "Please enter your full name."
+      );
+    }
+
+    // Check the email field using the browser's
+    // built-in email format validation.
+    const emailField =
+      document.getElementById("email");
+
+    if (!data.email) {
+      addError(
+        "email",
+        "emailError",
+        "Please enter your email address."
+      );
+    } else if (!emailField.validity.valid) {
+      addError(
+        "email",
+        "emailError",
+        "Please enter a valid email address."
+      );
+    }
+
+    // Check that a date was selected.
+    if (!data.date) {
+      addError(
+        "date",
+        "dateError",
+        "Please choose a preferred date."
+      );
+    }
+
+    // Check that exactly one allowed session
+    // was selected from the radio buttons.
+    if (!sessionOptions.includes(data.session)) {
+      addError(
+        "morning",
+        "sessionError",
+        "Please choose one study session."
+      );
+      document.getElementById(
+        "sessionGroup"
+      ).setAttribute("aria-invalid", "true");
+    }
+
+    // Check that a participation role was selected.
+    if (!roleOptions.includes(data.role)) {
+      addError(
+        "role",
+        "roleError",
+        "Please select how you will participate."
+      );
+    }
+
+    return {
+      errors: errors,
+      firstInvalid: firstInvalid
+    };
+  }
+
+  // This function turns the answers into URL
+  // parameters. encodeURIComponent is handled
+  // automatically by URLSearchParams.
+  //
+  // The URL's hash section stores the answers.
+  // The form can then read those answers when
+  // someone opens the shared link.
+  function createShareLink(data) {
+    const params = new URLSearchParams();
+
+    params.set("name", data.name);
+    params.set("email", data.email);
+    params.set("date", data.date);
+    params.set("session", data.session);
+    params.set("role", data.role);
+    params.set("notes", data.notes);
+
+    // Store each selected item separately.
+    data.bring.forEach(function(item) {
+      params.append("bring", item);
+    });
+
+    // Use the current page address, removing
+    // any old query or hash values first.
+    const url = new URL(window.location.href);
+    url.search = "";
+    url.hash = params.toString();
+
+    return url.toString();
+  }
+
+  // This function handles the Create Link button.
+  // preventDefault stops the browser from sending
+  // the form to a server or reloading the page.
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    clearErrors();
+    result.classList.add("hidden");
+    copyStatus.textContent = "";
+
+    const data = collectAnswers();
+    const validation = validateAnswers(data);
+
+    // If there are problems, display all errors
+    // in text and announce them to screen readers.
+    // Then move keyboard focus to the first problem.
+    if (validation.errors.length > 0) {
+      const heading = document.createElement("h2");
+      heading.textContent =
+        "Please fix the following errors:";
+
+      const list = document.createElement("ul");
+
+      validation.errors.forEach(function(message) {
+        const item = document.createElement("li");
+        item.textContent = message;
+        list.appendChild(item);
+      });
+
+      errorSummary.replaceChildren(heading, list);
+      errorSummary.classList.remove("hidden");
+
+      validation.firstInvalid.focus();
+      return;
+    }
+
+    // If everything is valid, create the link
+    // and make it available to copy or open.
+    generatedLink = createShareLink(data);
+
+    shareLink.href = generatedLink;
+    result.classList.remove("hidden");
+
+    // Move focus to the success heading so keyboard
+    // and screen reader users know what happened.
+    resultHeading.focus();
+  });
+
+  // This function copies the link to the clipboard.
+  // It uses the modern Clipboard API when available.
+  // The fallback supports older browser situations.
+  async function copyGeneratedLink() {
+    if (!generatedLink) {
+      copyStatus.textContent =
+        "Please create a link first.";
+      return;
+    }
+
+    try {
+      if (navigator.clipboard &&
+          window.isSecureContext) {
+        await navigator.clipboard.writeText(
+          generatedLink
+        );
+      } else {
+        // Use a temporary text area to support
+        // copying in browsers without Clipboard API.
+        const temporary =
+          document.createElement("textarea");
+
+        temporary.value = generatedLink;
+        temporary.setAttribute(
+          "aria-label",
+          "Temporary link copy field"
+        );
+        temporary.style.position = "fixed";
+        temporary.style.left = "-9999px";
+
+        document.body.appendChild(temporary);
+        temporary.select();
+
+        const copied =
+          document.execCommand("copy");
+
+        temporary.remove();
+
+        if (!copied) {
+          throw new Error("Copy not supported");
+        }
+      }
+
+      copyStatus.textContent =
+        "Link copied! You can now paste it " +
+        "into an email or message.";
+
+    } catch (error) {
+      // If copying is blocked, provide a text box
+      // so the participant can copy the URL manually.
+      copyStatus.textContent =
+        "Automatic copying was unavailable. " +
+        "Select and copy the link below.";
+
+      let fallback =
+        document.getElementById("manualCopy");
+
+      if (!fallback) {
+        fallback = document.createElement("textarea");
+        fallback.id = "manualCopy";
+        fallback.setAttribute(
+          "aria-label",
+          "Generated link for manual copying"
+        );
+        fallback.readOnly = true;
+        copyStatus.after(fallback);
+      }
+
+      fallback.value = generatedLink;
+      fallback.focus();
+      fallback.select();
+    }
+  }
+
+  // Connect the Copy button to the copying function.
+  copyButton.addEventListener(
+    "click",
+    copyGeneratedLink
+  );
+
+  // This function restores answers when someone
+  // opens a URL containing saved form information.
+  function restoreAnswersFromLink() {
+    const hash = window.location.hash.slice(1);
+
+    // Do nothing when the link has no saved answers.
+    if (!hash) {
+      return;
+    }
+
+    const params = new URLSearchParams(hash);
+
+    // Only restore links that contain form answers.
+    if (!params.has("name") &&
+        !params.has("email") &&
+        !params.has("session")) {
+      return;
+    }
+
+    // Restore the text, email, date and notes.
+    document.getElementById("fullName").value =
+      params.get("name") || "";
+
+    document.getElementById("email").value =
+      params.get("email") || "";
+
+    document.getElementById("date").value =
+      params.get("date") || "";
+
+    document.getElementById("notes").value =
+      (params.get("notes") || "").slice(0, 500);
+
+    // Restore the selected session radio button.
+    const savedSession = params.get("session");
+
+    form.querySelectorAll(
+      'input[name="session"]'
+    ).forEach(function(radio) {
+      radio.checked =
+        radio.value === savedSession;
+    });
+
+    // Restore all selected checkbox items.
+    const savedItems = params.getAll("bring");
+
+    form.querySelectorAll(
+      'input[name="bring"]'
+    ).forEach(function(checkbox) {
+      checkbox.checked =
+        savedItems.includes(checkbox.value);
+    });
+
+    // Restore the dropdown only if its value
+    // matches one of the allowed choices.
+    const savedRole = params.get("role") || "";
+
+    document.getElementById("role").value =
+      roleOptions.includes(savedRole)
+        ? savedRole
+        : "";
+
+    // Tell visitors that answers were restored.
+    const message = document.createElement("p");
+    message.setAttribute("role", "status");
+    message.textContent =
+      "This form was filled in from a shared link. " +
+      "You can review or edit the answers.";
+
+    form.before(message);
+  }
+
+  // This function clears results and errors when
+  // the participant chooses the Clear Form button.
+  form.addEventListener("reset", function() {
+    clearErrors();
+
+    result.classList.add("hidden");
+    generatedLink = "";
+    copyStatus.textContent = "";
+
+    // Remove old saved answers from the current URL
+    // without reloading the page.
+    const cleanURL = new URL(window.location.href);
+    cleanURL.hash = "";
+    cleanURL.search = "";
+
+    window.history.replaceState(
+      null,
+      "",
+      cleanURL.toString()
+    );
+
+    const manualCopy =
+      document.getElementById("manualCopy");
+
+    if (manualCopy) {
+      manualCopy.remove();
+    }
+  });
+
+  // When the page first loads, look for saved
+  // answers in the link and fill the form in.
+  restoreAnswersFromLink();
+
+  // ==================================================
+  // End of v1.0
+  // ==================================================
+</script>
+</body>
+</html>
